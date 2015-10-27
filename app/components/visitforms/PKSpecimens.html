@@ -1,0 +1,867 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>PK specimens</h2>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='form'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && form.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <fieldset>
+      <legend>Details</legend>
+      <div class='row'>
+        <h4 class='col-xs-1'>Visit</h4>
+        <input class='form-control, col-xs-4' ng-model='visit_type' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-3'>Date of clinical visit </h4>
+        <input class='form-control, col-xs-2' ng-model='visit.visit_date' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-1'>Form </h4>
+        <input class='form-control, col-xs-4' ng-disabled='true' value="PK specimens" />
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>PK specimen collection performed</legend>
+      
+      <div class='form-group' 
+        ng-show='required("StudyEnrollments.Visits.PKSpecimens.collected", form, visit, studyEnrollment)'>
+        <br />
+        <label class='h4-label'>Were specimens for PK analysis collected for this study visit?</label>
+        <cqs-select
+          ng-class="{'has-error':errors.collected}"
+          attribute='form.collected'
+          collection='enum.collected'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.PKSpecimens.collected", form, visit, studyEnrollment)'
+          draftstatus='form.draftStatus'>
+        </cqs-select>
+      </div>
+      
+      <div class='row indent-1' 
+        ng-show='required("StudyEnrollments.Visits.PKSpecimens.not_collected_reason", form, visit, studyEnrollment)'>
+        <br />
+        <label class='h4-label'>PK specimen collection: reason not performed</label>
+        <cqs-select
+          ng-class="{'has-error':errors.not_collected_reason}"
+          attribute='form.not_collected_reason'
+          collection='enum.not_collected_reason'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.PKSpecimens.not_collected_reason", form, visit, studyEnrollment)'
+          change='clearData(form.collected==="No" && form.not_collected_reason !== "Other (specify)", ["not_collected_reason_other"], [])'
+          draftstatus='form.draftStatus'>
+        </cqs-select>
+      </div>
+      
+      <div class='row indent-2' 
+        ng-show='required("StudyEnrollments.Visits.PKSpecimens.not_collected_reason_other", form, visit, studyEnrollment)'>
+        <br />
+        <label class='h4-label'>PK specimen collection: reason not performed: specify</label>
+        <cqs-area
+          ng-class="{'has-error':errors.not_collected_reason_other}"
+          attribute='form.not_collected_reason_other'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.PKSpecimens.not_collected_reason_other", form, visit, studyEnrollment)'
+          draftstatus='form.draftStatus'>
+        </cqs-area>
+      </div>
+
+      <br />
+      <fieldset ng-show='required("StudyEnrollments.Visits.PKSpecimens.date_collected", form, visit, studyEnrollment) || required("StudyEnrollments.Visits.PKSpecimens.y1_collected", form, visit, studyEnrollment)'>
+        <legend>PK specimen collection(s)</legend>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.date_collected", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Date of PK specimen (pre-dose) collection</label>
+        </div>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.date_collected", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+          <cqs-check 
+            attribute='form.date_as_same_as_visit'
+            ng-class="{'has-error':errors.date_as_same_as_visit}"
+            isdisabled='disabled'
+            ng-click='setDate("date_collected", form.date_as_same_as_visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.date_collected", form, visit, studyEnrollment)'>
+          <cqs-input 
+            attribute='form.date_collected'
+            label='labelService("StudyEnrollments.Visits.PKSpecimens.date_collected")'
+            ng-class="{'has-error':errors.date_collected}"
+            isdisabled='disabled || form.y1_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.date_collected", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.PKSpecimens", "date_collected", form, visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.time_collected", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Time of PK specimen (pre-dose) collection</label>
+          <span>
+            <cqs-input 
+              attribute='form.time_collected'
+              ng-class="{'has-error':errors.time_collected}"
+              isdisabled='disabled'
+              placeholder="HH:MM AM/PM"
+              isrequired='required("StudyEnrollments.Visits.PKSpecimens.time_collected", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-input>
+            <p>Time must be reported in the format HH:MM AM/PM</p>
+          </span>
+        </div>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y1_collected", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Was PK specimen 1 (pre-dose) collected?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.y1_collected}"
+            attribute='form.y1_collected'
+            collection='enum.y1_collected'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y1_collected", form, visit, studyEnrollment)'
+            change='clearData(form.y1_collected==="Yes", ["y1_not_collected_reason","y1_not_collected_reason_other"], ["y1_date_as_same_as_visit", "date_of_y1", "time_of_y1"])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y1_not_collected_reason", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PK specimen 1 (pre-dose) collection: reason not performed </label>
+          <cqs-select
+            ng-class="{'has-error':errors.y1_not_collected_reason}"
+            attribute='form.y1_not_collected_reason'
+            collection='enum.y1_not_collected_reason'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y1_not_collected_reason", form, visit, studyEnrollment)'
+            change='clearData(form.y1_collected==="No" && form.y1_not_collected_reason !== "Other (specify)", ["y1_not_collected_reason_other"], [])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y1_not_collected_reason_other", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PK specimen 1 (pre-dose) collection: reason not performed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.y1_not_collected_reason_other}"
+            rows="6"
+            attribute='form.y1_not_collected_reason_other'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y1_not_collected_reason_other", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.date_of_y1", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Date of {{(visit.cycle_day_c === '1' && visit.cycle_day_d === '1') ? 'PK specimen 1' : 'PK specimen'}} (pre-dose) collection</label>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.date_of_y1", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+          <cqs-check 
+            attribute='form.y1_date_as_same_as_visit'
+            ng-class="{'has-error':errors.y1_date_as_same_as_visit}"
+            isdisabled='disabled'
+            ng-click='setDate("date_of_y1", form.y1_date_as_same_as_visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.date_of_y1", form, visit, studyEnrollment)'>
+          <cqs-input 
+            attribute='form.date_of_y1'
+            label='labelService("StudyEnrollments.Visits.PKSpecimens.date_of_y1")'
+            ng-class="{'has-error':errors.date_of_y1}"
+            isdisabled='disabled || form.y1_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.date_of_y1", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.PKSpecimens", "date_of_y1", form, visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.time_of_y1", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Time of {{(visit.cycle_day_c === '1' && visit.cycle_day_d === '1') ? 'PK specimen 1' : 'PK specimen'}} (pre-dose) collection:</label>
+          <span>
+            <cqs-input 
+              attribute='form.time_of_y1'
+              ng-class="{'has-error':errors.time_of_y1}"
+              isdisabled='disabled'
+              placeholder="HH:MM AM/PM"
+              isrequired='required("StudyEnrollments.Visits.PKSpecimens.time_of_y1", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-input>
+            <p>Time must be reported in the format HH:MM AM/PM</p>
+          </span>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y2_collected", form, visit, studyEnrollment)'>
+          <br />
+          <br />
+          <label class='h4-label'>Was PK specimen 2 (0.5h post-dose) collected?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.y2_collected}"
+            attribute='form.y2_collected'
+            collection='enum.y2_collected'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y2_collected", form, visit, studyEnrollment)'
+            change='clearData(form.y2_collected==="Yes", ["y2_not_collected_reason","y2_not_collected_reason_other"], ["y2_date_as_same_as_visit", "date_of_y2", "time_of_y2"])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+        
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y2_not_collected_reason", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PK specimen 2 (0.5h post-dose) collection: reason not performed </label>
+          <cqs-select
+            ng-class="{'has-error':errors.y2_not_collected_reason}"
+            attribute='form.y2_not_collected_reason'
+            collection='enum.y2_not_collected_reason'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y2_not_collected_reason", form, visit, studyEnrollment)'
+            change='clearData(form.y2_collected==="No" && form.y2_not_collected_reason !== "Other (specify)", ["y2_not_collected_reason_other"], [])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y2_not_collected_reason_other", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PK specimen 2 (0.5h post-dose) collection: reason not performed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.y2_not_collected_reason_other}"
+            rows="6"
+            attribute='form.y2_not_collected_reason_other'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y2_not_collected_reason_other", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+        
+        <div class='form-group indent-1' ng-show='(form.y2_collected === "Yes")'>
+          <br />
+          <label class='h4-label'>Date of PK specimen 2 (0.5h post-dose) collection</label>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.y2_collected === "Yes"'>
+          <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+          <cqs-check 
+            attribute='form.y2_date_as_same_as_visit'
+            ng-class="{'has-error':errors.y2_date_as_same_as_visit}"
+            isdisabled='disabled'
+            ng-click='setDate("date_of_y2", form.y2_date_as_same_as_visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.y2_collected === "Yes"'>
+          <cqs-input 
+            attribute='form.date_of_y2'
+            label='labelService("StudyEnrollments.Visits.PKSpecimens.date_of_y2")'
+            ng-class="{'has-error':errors.date_of_y2}"
+            isdisabled='disabled || form.y2_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.date_of_y2", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.PKSpecimens", "date_of_y2", form, visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class='form-group indent-1' ng-show='(form.y2_collected === "Yes")'>
+          <br />
+          <label class='h4-label'>Time of PK specimen 2 (0.5h post-dose) collection</label>
+          <span>
+            <cqs-input 
+              attribute='form.time_of_y2'
+              ng-class="{'has-error':errors.time_of_y2}"
+              isdisabled='disabled'
+              placeholder="HH:MM AM/PM"
+              isrequired='required("StudyEnrollments.Visits.PKSpecimens.time_of_y2", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-input>
+            <p>Time must be reported in the format HH:MM AM/PM</p>
+          </span>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y3_collected", form, visit, studyEnrollment)'>
+          <br /><br />
+          <label class='h4-label'>Was PK specimen 3 (1h post-dose) collected?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.y3_collected}"
+            attribute='form.y3_collected'
+            collection='enum.y3_collected'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y3_collected", form, visit, studyEnrollment)'
+            change='clearData(form.y3_collected==="Yes", ["y3_not_collected_reason","y3_not_collected_reason_other"], ["y3_date_as_same_as_visit", "date_of_y3", "time_of_y3"])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+        
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y3_not_collected_reason", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PK specimen 3 (1h post-dose) collection: reason not performed </label>
+          <cqs-select
+            ng-class="{'has-error':errors.y3_not_collected_reason}"
+            attribute='form.y3_not_collected_reason'
+            collection='enum.y3_not_collected_reason'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y3_not_collected_reason", form, visit, studyEnrollment)'
+            change='clearData(form.y3_collected==="No" && form.y3_not_collected_reason !== "Other (specify)", ["y3_not_collected_reason_other"], [])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y3_not_collected_reason_other", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PK specimen 3 (1h post-dose) collection: reason not performed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.y3_not_collected_reason_other}"
+            attribute='form.y3_not_collected_reason_other'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y3_not_collected_reason_other", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+        
+        <div class='form-group indent-1' ng-show='(form.y3_collected === "Yes")'>
+          <br />
+          <label class='h4-label'>Date of PK specimen 3 (1h post-dose) collection</label>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.y3_collected === "Yes"'>
+          <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+          <cqs-check 
+            attribute='form.y3_date_as_same_as_visit'
+            ng-class="{'has-error':errors.y3_date_as_same_as_visit}"
+            isdisabled='disabled'
+            ng-click='setDate("date_of_y3", form.y3_date_as_same_as_visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.y3_collected === "Yes"'>
+          <cqs-input 
+            attribute='form.date_of_y3'
+            label='labelService("StudyEnrollments.Visits.PKSpecimens.date_of_y3")'
+            ng-class="{'has-error':errors.date_of_y3}"
+            isdisabled='disabled || form.y3_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.date_of_y3", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.PKSpecimens", "date_of_y3", form, visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class='form-group indent-1' ng-show='(form.y3_collected === "Yes")'>
+          <br />
+          <label class='h4-label'>Time of PK specimen 3 (1h post-dose) collection</label>
+          <span>
+            <cqs-input 
+              attribute='form.time_of_y3'
+              ng-class="{'has-error':errors.time_of_y3}"
+              isdisabled='disabled'
+              placeholder="HH:MM AM/PM"
+              isrequired='required("StudyEnrollments.Visits.PKSpecimens.time_of_y3", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-input>
+            <p>Time must be reported in the format HH:MM AM/PM</p>
+          </span>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y4_collected", form, visit, studyEnrollment)'>
+          <br /><br />
+          <label class='h4-label'>Was PK specimen 4 (2h post-dose) collected?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.y4_collected}"
+            attribute='form.y4_collected'
+            collection='enum.y4_collected'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y4_collected", form, visit, studyEnrollment)'
+            change='clearData(form.y4_collected==="Yes", ["y4_not_collected_reason","y4_not_collected_reason_other"], ["y4_date_as_same_as_visit", "date_of_y4", "time_of_y4"])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+        
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y4_not_collected_reason", form, visit, studyEnrollment)'>
+          <label class='h4-label'>PK specimen 4 (2h post-dose) collection: reason not performed </label>
+          <cqs-select
+            ng-class="{'has-error':errors.y4_not_collected_reason}"
+            attribute='form.y4_not_collected_reason'
+            collection='enum.y4_not_collected_reason'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y4_not_collected_reason", form, visit, studyEnrollment)'
+            change='clearData(form.y4_collected==="No" && form.y4_not_collected_reason !== "Other (specify)", ["y4_not_collected_reason_other"], [])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y4_not_collected_reason_other", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PK specimen 4 (2h post-dose) collection: reason not performed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.y4_not_collected_reason_other}"
+            attribute='form.y4_not_collected_reason_other'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y4_not_collected_reason_other", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+        <div class='form-group indent-1' ng-show='(form.y4_collected === "Yes")'>
+          <label class='h4-label'>Date of PK specimen 4 (2h post-dose) collection</label>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.y4_collected === "Yes"'>
+          <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+          <cqs-check 
+            attribute='form.y4_date_as_same_as_visit'
+            ng-class="{'has-error':errors.y4_date_as_same_as_visit}"
+            isdisabled='disabled'
+            ng-click='setDate("date_of_y4", form.y4_date_as_same_as_visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.y4_collected === "Yes"'>
+          <cqs-input 
+            attribute='form.date_of_y4'
+            label='labelService("StudyEnrollments.Visits.PKSpecimens.date_of_y4")'
+            ng-class="{'has-error':errors.date_of_y4}"
+            isdisabled='disabled || form.y4_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.date_of_y4", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.PKSpecimens", "date_of_y4", form, visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class='form-group indent-1' ng-show='(form.y4_collected === "Yes")'>
+          <br />
+          <label class='h4-label'>Time of PK specimen 4 (2h post-dose) collection</label>
+          <span>
+            <cqs-input 
+              attribute='form.time_of_y4'
+              ng-class="{'has-error':errors.time_of_y4}"
+              isdisabled='disabled'
+              placeholder="HH:MM AM/PM"
+              isrequired='required("StudyEnrollments.Visits.PKSpecimens.time_of_y4", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-input>
+            <p>Time must be reported in the format HH:MM AM/PM</p>
+          </span>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y5_collected", form, visit, studyEnrollment)'>
+          <br /><br />
+          <label class='h4-label'>Was PK specimen 5 (4h post-dose) collected?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.y5_collected}"
+            attribute='form.y5_collected'
+            collection='enum.y5_collected'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y5_collected", form, visit, studyEnrollment)'
+            change='clearData(form.y5_collected==="Yes", ["y5_not_collected_reason","y5_not_collected_reason_other"], ["y5_date_as_same_as_visit", "date_of_y5", "time_of_y5"])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y5_not_collected_reason", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PK specimen 5 (4h post-dose) collection: reason not performed </label>
+          <cqs-select
+            ng-class="{'has-error':errors.y5_not_collected_reason}"
+            attribute='form.y5_not_collected_reason'
+            collection='enum.y5_not_collected_reason'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y5_not_collected_reason", form, visit, studyEnrollment)'
+            change='clearData(form.y5_collected==="No" && form.y5_not_collected_reason !== "Other (specify)", ["y5_not_collected_reason_other"], [])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y5_not_collected_reason_other", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PK specimen 5 (4h post-dose) collection: reason not performed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.y5_not_collected_reason_other}"
+            attribute='form.y5_not_collected_reason_other'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y5_not_collected_reason_other", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+        
+        <div class='form-group indent-1' ng-show='(form.y5_collected === "Yes")'>
+          <br />
+          <label class='h4-label'>Date of PK specimen 5 (4h post-dose) collection</label>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.y5_collected === "Yes"'>
+          <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>          
+          <cqs-check 
+            attribute='form.y5_date_as_same_as_visit'
+            ng-class="{'has-error':errors.y5_date_as_same_as_visit}"
+            isdisabled='disabled'
+            ng-click='setDate("date_of_y5", form.y5_date_as_same_as_visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+        </div>
+     
+        <div class='form-group indent-1' ng-show='form.y5_collected === "Yes"'>
+          <cqs-input 
+            attribute='form.date_of_y5'
+            label='labelService("StudyEnrollments.Visits.PKSpecimens.date_of_y5")'
+            ng-class="{'has-error':errors.date_of_y5}"
+            isdisabled='disabled || form.y5_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.date_of_y5", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.PKSpecimens", "date_of_y5", form, visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class='form-group indent-1' ng-show='(form.y5_collected === "Yes")'>
+          <br />
+          <label class='h4-label'>Time of PK specimen 5 (4h post-dose) collection</label>
+          <span>
+            <cqs-input 
+              attribute='form.time_of_y5'
+              ng-class="{'has-error':errors.time_of_y5}"
+              isdisabled='disabled'
+              placeholder="HH:MM AM/PM"
+              isrequired='required("StudyEnrollments.Visits.PKSpecimens.time_of_y5", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-input>
+            <p>Time must be reported in the format HH:MM AM/PM</p>
+          </span>
+        </div>
+
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y6_collected", form, visit, studyEnrollment)'>
+          <br /><br />
+          <label class='h4-label'>Was PK specimen 6 (6h post-dose) collected?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.y6_collected}"
+            attribute='form.y6_collected'
+            collection='enum.y6_collected'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y6_collected", form, visit, studyEnrollment)'
+            change='clearData(form.y6_collected==="Yes", ["y6_not_collected_reason","y6_not_collected_reason_other"], ["y6_date_as_same_as_visit", "date_of_y6", "time_of_y6"])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y6_not_collected_reason", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PK specimen 6 (6h post-dose) collection: reason not performed </label>
+          <cqs-select
+            ng-class="{'has-error':errors.y6_not_collected_reason}"
+            attribute='form.y6_not_collected_reason'
+            collection='enum.y6_not_collected_reason'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y6_not_collected_reason", form, visit, studyEnrollment)'
+            change='clearData(form.y6_collected==="No" && form.y6_not_collected_reason !== "Other (specify)", ["y6_not_collected_reason_other"], [])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y6_not_collected_reason_other", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PK specimen 6 (6h post-dose) collection: reason not performed: specify</label>
+            <cqs-area
+              ng-class="{'has-error':errors.y6_not_collected_reason_other}"
+              attribute='form.y6_not_collected_reason_other'
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.PKSpecimens.y6_not_collected_reason_other", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-area>
+        </div>
+
+        <div class='form-group indent-1' ng-show='(form.y6_collected === "Yes")'>
+          <label class='h4-label'>Date of PK specimen 6 (6h post-dose) collection</label>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.y6_collected === "Yes"'>
+          <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+          <cqs-check 
+            attribute='form.y6_date_as_same_as_visit'
+            ng-class="{'has-error':errors.y6_date_as_same_as_visit}"
+            isdisabled='disabled'
+            ng-click='setDate("date_of_y6", form.y6_date_as_same_as_visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.y6_collected === "Yes"'>
+          <cqs-input 
+            attribute='form.date_of_y6'
+            label='labelService("StudyEnrollments.Visits.PKSpecimens.date_of_y6")'
+            ng-class="{'has-error':errors.date_of_y6}"
+            isdisabled='disabled || form.y6_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.date_of_y6", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.PKSpecimens", "date_of_y6", form, visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class='form-group' ng-show='(form.y6_collected === "Yes")'>
+          <br />
+          <label class='h4-label'>Time of PK specimen 6 (6h post-dose) collection</label>
+          <span>
+            <cqs-input 
+              attribute='form.time_of_y6'
+              ng-class="{'has-error':errors.time_of_y6}"
+              isdisabled='disabled'
+              placeholder="HH:MM AM/PM"
+              isrequired='required("StudyEnrollments.Visits.PKSpecimens.time_of_y6", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-input>
+            <p>Time must be reported in the format HH:MM AM/PM</p>
+          </span>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y7_collected", form, visit, studyEnrollment)'>
+          <br /><br />
+          <label class='h4-label'>Was PK specimen 7 (8h post-dose) collected?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.y7_collected}"
+            attribute='form.y7_collected'
+            collection='enum.y7_collected'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y7_collected", form, visit, studyEnrollment)'
+            change='clearData(form.y7_collected==="Yes", ["y7_not_collected_reason","y7_not_collected_reason_other"], ["y7_date_as_same_as_visit", "date_of_y7", "time_of_y7"])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y7_not_collected_reason", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PK specimen 7 (8h post-dose) collection: reason not performed </label>
+          <cqs-select
+            ng-class="{'has-error':errors.y7_not_collected_reason}"
+            attribute='form.y7_not_collected_reason'
+            collection='enum.y7_not_collected_reason'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y7_not_collected_reason", form, visit, studyEnrollment)'
+            change='clearData(form.y7_collected==="No" && form.y7_not_collected_reason !== "Other (specify)", ["y7_not_collected_reason_other"], [])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y7_not_collected_reason_other", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PK specimen 7 (8h post-dose) collection: reason not performed: specify</label>
+            <cqs-area
+              ng-class="{'has-error':errors.y7_not_collected_reason_other}"
+              attribute='form.y7_not_collected_reason_other'
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.PKSpecimens.y7_not_collected_reason_other", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-area>
+        </div>
+
+        <div class='form-group indent-1' ng-show='(form.y7_collected === "Yes")'>
+          <br />
+          <label class='h4-label'>Date of PK specimen 7 (8h post-dose) collection</label>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.y7_collected === "Yes"'>
+          <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+          <cqs-check 
+            attribute='form.y7_date_as_same_as_visit'
+            ng-class="{'has-error':errors.y7_date_as_same_as_visit}"
+            isdisabled='disabled'
+            ng-click='setDate("date_of_y7", form.y7_date_as_same_as_visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.y7_collected === "Yes"'>
+          <cqs-input 
+            attribute='form.date_of_y7'
+            label='labelService("StudyEnrollments.Visits.PKSpecimens.date_of_y7")'
+            ng-class="{'has-error':errors.date_of_y7}"
+            isdisabled='disabled || form.y7_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.date_of_y7", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.PKSpecimens", "date_of_y7", form, visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class='form-group indent-1' ng-show='(form.y7_collected === "Yes")'>
+          <br />
+          <label class='h4-label'>Time of PK specimen 7 (8h post-dose) collection</label>
+          <span>
+            <cqs-input 
+              attribute='form.time_of_y7'
+              ng-class="{'has-error':errors.time_of_y7}"
+              isdisabled='disabled'
+              placeholder="HH:MM AM/PM"
+              isrequired='required("StudyEnrollments.Visits.PKSpecimens.time_of_y7", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-input>
+            <p>Time must be reported in the format HH:MM AM/PM</p>
+          </span>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y8_collected", form, visit, studyEnrollment)'>
+          <br /><br />
+          <label class='h4-label'>Was PK specimen 8 (24h post-dose) collected?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.y8_collected}"
+            attribute='form.y8_collected'
+            collection='enum.y8_collected'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y8_collected", form, visit, studyEnrollment)'
+            change='clearData(form.y8_collected==="Yes", ["y8_not_collected_reason","y8_not_collected_reason_other"], ["y8_date_as_same_as_visit", "date_of_y8", "time_of_y8"])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='forum-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y8_not_collected_reason", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PK specimen 8 (24h post-dose) collection: reason not performed </label>
+          <cqs-select
+            ng-class="{'has-error':errors.y8_not_collected_reason}"
+            attribute='form.y8_not_collected_reason'
+            collection='enum.y8_not_collected_reason'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.y8_not_collected_reason", form, visit, studyEnrollment)'
+            change='clearData(form.y8_collected==="No" && form.y8_not_collected_reason !== "Other (specify)", ["y8_not_collected_reason_other"], [])'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.PKSpecimens.y8_not_collected_reason_other", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PK specimen 8 (24h post-dose) collection: reason not performed: specify</label>
+            <cqs-area
+              ng-class="{'has-error':errors.y8_not_collected_reason_other}"
+              attribute='form.y8_not_collected_reason_other'
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.PKSpecimens.y8_not_collected_reason_other", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-area>
+        </div>
+
+        <div class='form-group indent-1' ng-show='(form.y8_collected === "Yes")'>
+          <br />
+          <label class='h4-label'>Date of PK specimen 8 (24h post-dose) collection</label>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.y8_collected === "Yes"'>
+          <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+          <cqs-check 
+            attribute='form.y8_date_as_same_as_visit'
+            ng-class="{'has-error':errors.y8_date_as_same_as_visit}"
+            isdisabled='disabled'
+            ng-click='setDate("date_of_y8", form.y8_date_as_same_as_visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.y8_collected === "Yes"'>
+          <cqs-input 
+            attribute='form.date_of_y8'
+            label='labelService("StudyEnrollments.Visits.PKSpecimens.date_of_y8")'
+            ng-class="{'has-error':errors.date_of_y8}"
+            isdisabled='disabled || form.y8_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.PKSpecimens.date_of_y8", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.PKSpecimens", "date_of_y8", form, visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class='form-group indent-1' ng-show='(form.y8_collected === "Yes")'>
+          <br />
+          <label class='h4-label'>Time of PK specimen 8 (24h post-dose) collection</label>
+          <span>
+            <cqs-input
+              attribute='form.time_of_y8'
+              ng-class="{'has-error':errors.time_of_y8}"
+              isdisabled='disabled'
+              placeholder="HH:MM AM/PM"
+              isrequired='required("StudyEnrollments.Visits.PKSpecimens.time_of_y8", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-input>
+            <p>Time must be reported in the format HH:MM AM/PM</p>
+          </span>
+        </div>
+
+      </fieldset>
+    </fieldset>
+    
+    <div class='form-group'>
+      <label class='h4-label'>Record status:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.draftStatus}"
+        attribute='form.draftStatus'
+        collection='["Complete", "Incomplete"]'
+        isdisabled="disabled"
+        isrequired="true">
+      </cqs-select>
+    </div>
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+
+    <a ng-href="#/studyenrollments/{{studyEnrollment.id}}?tab=visitForms&visit={{ visit.id }}" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

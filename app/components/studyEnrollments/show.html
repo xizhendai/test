@@ -1,0 +1,63 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+<fieldset>
+  <legend>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id> </legend>
+
+  <div ng-if='message'>{{message}}</div>
+
+  <div class='row'>
+    <h2 class='col-xs-8'>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id> </h2>
+  </div>
+
+  <query-verify
+    data-object='studyEnrollment'
+    is-disabled='disabled'
+    can-verify='{{canVerify.StudyEnrollments && !isLockedDown()}}'
+    can-query='{{canVerify.StudyEnrollments}}'
+    can-comment='{{canComment}}'
+    verify='verify()'
+    comment='comment()'
+    comment-text='commentText'
+    ></query-verify>
+
+  <div class='row'>
+    <h4 class='col-xs-10'>Site name: {{ studyEnrollment.site_name }}</h4>
+  </div>
+  <div class='row'>
+    <h4 class='col-xs-10'>Initials: {{ initials }}</h4>
+  </div>
+  <div class='row'>
+    <h4 class='col-xs-10'>Enrollment stage: {{ details.trial_stage }}</h4>
+  </div>
+  <div class='row' ng-show="['Escalation stage I', 'Escalation stage II'].indexOf(details.trial_stage) >= 0">
+    <h4 class='col-xs-10'>Cohort: {{ details.stage_cohort }}</h4>
+  </div>
+  <div class='row'>
+    <h4 class='col-xs-10'>Patient eligible for study? {{ eligibility.eligible }}</h4>
+  </div>
+  <div class='row' ng-show='eligibility.eligible === "No"'>
+    <h4 class='col-xs-10'>Reason ineligible: {{ eligibility.reason_ineligible }}</h4>
+  </div>
+
+  <tabset>
+    <tab active="tabs['logForms'].active">
+      <tab-heading>Log forms</tab-heading>
+      <ng-include src="'components/studyEnrollments/logForms.html'"></ng-include>
+    </tab>
+    <tab active="tabs['visitForms'].active">
+      <tab-heading>Visit forms</tab-heading>
+      <ng-include src="'components/studyEnrollments/visitForms.html'"></ng-include>
+    </tab>
+    <tab active="tabs['deviations'].active">
+      <tab-heading>Deviations</tab-heading>
+      <ng-include src="'components/studyEnrollments/deviations.html'"></ng-include>
+    </tab>
+  </tabset>
+</fieldset>
+
+<div>
+  <a class='btn btn-primary' ng-href="data:text/plain;base64,{{studyEnrollmentRaw}}" target='_blank' ng-show='admin()'>Raw</a>
+  <a class='btn btn-primary' ng-href="#/studyenrollments/{{studyEnrollment.id}}/edit" ng-show='canEdit && !isLockedDown()'>Edit</a>
+  <a class='btn btn-primary' ng-href="#/studyenrollments">Back</a>
+</div>

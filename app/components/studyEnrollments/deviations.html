@@ -1,0 +1,29 @@
+<div class='container-fluid'>
+  <p class='first-heading'>Deviations</p>
+  <div class='sub-module'>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <td>Category</td>
+        <td>Date discovered</td>
+        <td>Verified</td>
+      </thead>
+      <tbody>
+        <tr ng-repeat='dvt in studyEnrollment.Deviations' ng-click="rowClick('/studyenrollments/'+studyEnrollment.id+'/deviations/'+dvt.id)">
+          <td>{{ dvt.category }}</td>
+          <td>{{ dvt.discovered_date }}</td>
+          <td>
+            <button
+              ng-click='verifyObject(dvt, "Deviation", {id: studyEnrollment.id, Deviations: [{id: dvt.id, _verify: true}]}); $event.stopPropagation();'
+              ng-show='canVerify.Deviations && !isLockedDown() && dvt.draftStatus === "Complete" && !objectVerified(dvt)'
+              class='btn table-btn btn-success'>
+              Verify
+            </button>
+            <span ng-show='!(canVerify.Deviations && !isLockedDown() && dvt.draftStatus === "Complete") && !objectVerified(dvt)'>Not verified</span>
+            <span ng-show='objectVerified(dvt)'>{{objectVerifiedDate(dvt) | date : 'yyyy-MM-dd'}}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <a ng-href='#/studyenrollments/{{ studyEnrollment.id }}/deviations/new' ng-show='canAdd.Deviations && !isLockedDown()'>New deviation</a>
+  </div>
+</div>

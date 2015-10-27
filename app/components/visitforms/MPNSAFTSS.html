@@ -1,0 +1,510 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>MPN-SAF TSS</h2>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='form'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && form.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <fieldset>
+      <legend>Details</legend>
+      <div class='row'>
+        <h4 class='col-xs-1'>Visit</h4>
+        <input class='form-control, col-xs-4' ng-model='visit_type' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-3'>Date of clinical visit </h4>
+        <input class='form-control, col-xs-2' ng-model='visit.visit_date' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-1'>Form </h4>
+        <input class='form-control, col-xs-4' ng-disabled='true' value="MPN-SAF TSS" />
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Form completion</legend>
+      
+      <div class='form-group'>
+        <label class='h4-label'>Were patient-reported symptoms by MPN-SAF TSS assessed for this timepoint?</label>
+        <cqs-select
+          ng-class="{'has-error':errors.performed}"
+          attribute='form.performed'
+          collection='enum.performed'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.MPNSAFTSS.performed", form, visit, studyEnrollment)'
+          change='clearData(form.performed=="Yes",[],["date_as_same_as_visit"]);'
+          draftstatus='form.draftStatus'>
+        </cqs-select>
+      </div>
+      
+      <div class='form-group indent-1' 
+        ng-show='required("StudyEnrollments.Visits.MPNSAFTSS.not_performed_reason", form, visit, studyEnrollment)'>
+        <label class='h4-label'>MPN-SAF TSS: reason not performed</label>
+        <cqs-select
+          ng-class="{'has-error':errors.not_performed_reason}"
+          attribute='form.not_performed_reason'
+          collection='enum.not_performed_reason'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.MPNSAFTSS.not_performed_reason", form, visit, studyEnrollment)'
+          draftstatus='form.draftStatus'>
+        </cqs-select>
+      </div>
+
+      <div class='form-group indent-2' 
+        ng-show='required("StudyEnrollments.Visits.MPNSAFTSS.not_performed_reason_other", form, visit, studyEnrollment)'>
+        <label class='h4-label'>MPN-SAF TSS: reason not performed: specify</label>
+        <cqs-area
+          ng-class="{'has-error':errors.not_performed_reason_other}"
+          attribute='form.not_performed_reason_other'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.MPNSAFTSS.not_performed_reason_other", form, visit, studyEnrollment)'
+          rows="6"
+          draftstatus='form.draftStatus'>
+        </cqs-area>
+      </div>
+
+      <div class='form-group indent-1' ng-show='form.performed === "Yes"'>
+        <br />
+        <label class='h4-label'>Date of completion of MPN-SAF TSS</label>
+      </div>
+
+      <div class='form-group indent-1' ng-show='form.performed === "Yes"'>
+        <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>        
+        <cqs-check 
+          attribute='form.date_as_same_as_visit'
+          ng-class="{'has-error':errors.date_as_same_as_visit}"
+          isdisabled='disabled'
+          ng-click='setDate("date_of_completion", form.date_as_same_as_visit) '
+          clearif='form.performed !=="Yes"'
+          draftstatus='form.draftStatus'>
+        </cqs-check>
+      </div>
+
+      <div class='form-group indent-1' ng-show='form.performed === "Yes"'>
+        <cqs-input attribute='form.date_of_completion'
+          label='labelService("StudyEnrollments.Visits.MPNSAFTSS.date_of_completion")'
+          ng-class="{'has-error':errors.date_of_completion}"
+          isdisabled='disabled || form.date_as_same_as_visit'
+          placeholder="YYYY-MM-DD"
+          isrequired='required("StudyEnrollments.Visits.MPNSAFTSS.date_of_completion", form, visit, studyEnrollment)'
+          warnings='warnings("StudyEnrollments.Visits.MPNSAFTSS", "date_of_completion", form, visit)'
+          draftstatus='form.draftStatus'>
+        </cqs-input>
+      </div>
+
+
+    </fieldset>
+    <fieldset ng-show='form.performed === "Yes"'>
+      <legend>Patient-reported symptoms</legend>
+      <div class='row' ng-show='required("StudyEnrollments.Visits.MPNSAFTSS.fatigue_rate", form, visit, studyEnrollment)'>
+        <p><h4 class='col-xs-10 fat-lines'>Please rate your fatigue (weariness, tiredness), by selecting the one number that best describes your WORST level of fatigue during past 24 hours</h4></p>
+        <p class="col-xs-1"></p><table class="mpnsaftss">
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td ng-repeat="value in enum.fatigue_rate">
+              <cqs-radio fieldname='fatigue_rate'
+          ng-class="{'has-error':errors.fatigue_rate}"
+                         attribute='form.fatigue_rate'
+                         value='value'
+                         isrequired='required("StudyEnrollments.Visits.MPNSAFTSS.fatigue_rate", form, visit, studyEnrollment)'
+                         isdisabled='disabled'
+                         draftstatus='form.draftStatus'>
+              </cqs-radio>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>(No fatigue)</td>
+            <td ng-repeat="value in enum.fatigue_rate">
+              {{value}}
+            </td>
+          </tr>
+        </table>
+      </div>
+      <br />
+      <div ng-show='form.performed === "Yes"'>
+        <div class="row">
+          <h4 class="col-xs-10 fat-lines">Please select the one number that describes how, during the past week how much difficulty you have had with each of the following symptoms</h4>
+        </div>
+
+        <div class="row">
+          <p class="col-xs-1"></p><label>Filling up quickly when you eat (early satiety)</label>
+          <table class="mpnsaftss">
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td ng-repeat="value in enum.eat_quickly">
+                <cqs-radio fieldname="eat_quickly"
+          ng-class="{'has-error':errors.eat_quickly}"
+                           attribute="form.eat_quickly"
+                           value="value"
+                           isrequired='required("StudyEnrollments.Visits.MPNSAFTSS.eat_quickly", form, visit, studyEnrollment)'
+                           isdisabled="disabled"
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>(Absent)</td>
+              <td ng-repeat="value in enum.eat_quickly">
+                {{value}}
+              </td>
+            </tr>
+          </table>
+        </div>
+        <br />
+
+        <div class="row">
+          <p class="col-xs-1"></p><label>Abdominal discomfort</label>
+          <table class="mpnsaftss">
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td ng-repeat="value in enum.abdominal_discomfort">
+                <cqs-radio fieldname="abdominal_discomfort"
+          ng-class="{'has-error':errors.abdominal_discomfort}"
+                           attribute="form.abdominal_discomfort"
+                           value="value"
+                           isrequired='required("StudyEnrollments.Visits.MPNSAFTSS.abdominal_discomfort", form, visit, studyEnrollment)'
+                           isdisabled="disabled"
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>(Absent)</td>
+              <td ng-repeat="value in enum.abdominal_discomfort">
+                {{value}}
+              </td>
+            </tr>
+          </table>
+        </div>
+        <br />
+
+        <div class="row">
+          <p class="col-xs-1"></p><label>Inactivity</label>
+          <table class="mpnsaftss">
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td ng-repeat="value in enum.inactivity">
+                <cqs-radio fieldname="inactivity"
+          ng-class="{'has-error':errors.inactivity}"
+                           attribute="form.inactivity"
+                           value="value"
+                           isrequired='required("StudyEnrollments.Visits.MPNSAFTSS.inactivity", form, visit, studyEnrollment)'
+                           isdisabled="disabled"
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>(Absent)</td>
+              <td ng-repeat="value in enum.inactivity">
+                {{value}}
+              </td>
+            </tr>
+          </table>
+        </div>
+        <br />
+
+        <div class="row">
+          <p class="col-xs-1"></p><label>Problems with concentration - compared to prior to my MPD</label>
+          <table class="mpnsaftss">
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td ng-repeat="value in enum.problems_with_concentration">
+                <cqs-radio fieldname="problems_with_concentration"
+          ng-class="{'has-error':errors.problems_with_concentration}"
+                           attribute="form.problems_with_concentration"
+                           value="value"
+                           isrequired='required("StudyEnrollments.Visits.MPNSAFTSS.problems_with_concentration", form, visit, studyEnrollment)'
+                           isdisabled="disabled"
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>(Absent)</td>
+              <td ng-repeat="value in enum.problems_with_concentration">
+                {{value}}
+              </td>
+            </tr>
+          </table>
+        </div>
+        <br />
+
+        <div class="row">
+          <p class="col-xs-1"></p><label>Numbness / tingling (in my hands and feet)</label>
+          <table class="mpnsaftss">
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td ng-repeat="value in enum.numbness_tingling">
+                <cqs-radio fieldname="numbness_tingling"
+          ng-class="{'has-error':errors.numbness_tingling}"
+                           attribute="form.numbness_tingling"
+                           value="value"
+                           isrequired='required("StudyEnrollments.Visits.MPNSAFTSS.numbness_tingling", form, visit, studyEnrollment)'
+                           isdisabled="disabled"
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>(Absent)</td>
+              <td ng-repeat="value in enum.numbness_tingling">
+                {{value}}
+              </td>
+            </tr>
+          </table>
+        </div>
+        <br />
+
+        <div class="row">
+          <p class="col-xs-1"></p><label>Night sweats</label>
+          <table class="mpnsaftss">
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td ng-repeat="value in enum.night_sweats">
+                <cqs-radio fieldname="night_sweats"
+          ng-class="{'has-error':errors.night_sweats}"
+                           attribute="form.night_sweats"
+                           value="value"
+                           isrequired='required("StudyEnrollments.Visits.MPNSAFTSS.night_sweats", form, visit, studyEnrollment)'
+                           isdisabled="disabled"
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>(Absent)</td>
+              <td ng-repeat="value in enum.night_sweats">
+                {{value}}
+              </td>
+            </tr>
+          </table>
+        </div>
+        <br />
+
+        <div class="row">
+          <p class="col-xs-1"></p><label>Itching (pruritus)</label>
+          <table class="mpnsaftss">
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td ng-repeat="value in enum.itching">
+                <cqs-radio fieldname="itching"
+          ng-class="{'has-error':errors.itching}"
+                           attribute="form.itching"
+                           value="value"
+                           isrequired='required("StudyEnrollments.Visits.MPNSAFTSS.itching", form, visit, studyEnrollment)'
+                           isdisabled="disabled"
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>(Absent)</td>
+              <td ng-repeat="value in enum.itching">
+                {{value}}
+              </td>
+            </tr>
+          </table>
+        </div>
+        <br />
+
+        <div class="row">
+          <p class="col-xs-1"></p><label>Bone pain (diffuse, not joint pain or arthritis)</label>
+          <table class="mpnsaftss">
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td ng-repeat="value in enum.bone_pain">
+                <cqs-radio fieldname="bone_pain"
+          ng-class="{'has-error':errors.bone_pain}"
+                           attribute="form.bone_pain"
+                           value="value"
+                           isrequired='required("StudyEnrollments.Visits.MPNSAFTSS.bone_pain", form, visit, studyEnrollment)'
+                           isdisabled="disabled"
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>(Absent)</td>
+              <td ng-repeat="value in enum.bone_pain">
+                {{value}}
+              </td>
+            </tr>
+          </table>
+        </div>
+        <br />
+
+        <div class="row">
+          <p class="col-xs-1"></p><label>Fever (&gt;100F)</label>
+          <table class="mpnsaftss">
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td ng-repeat="value in enum.fever">
+                <cqs-radio fieldname="fever"
+          ng-class="{'has-error':errors.fever}"
+                           attribute="form.fever"
+                           value="value"
+                           isrequired='required("StudyEnrollments.Visits.MPNSAFTSS.fever", form, visit, studyEnrollment)'
+                           isdisabled="disabled"
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>(Absent)</td>
+              <td ng-repeat="value in enum.fever">
+                {{value}}
+              </td>
+            </tr>
+          </table>
+        </div>
+        <br />
+
+        <div class="row">
+          <p class="col-xs-1"></p><label>Unintentional weight loss in last 6 months</label>
+          <table class="mpnsaftss">
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td ng-repeat="value in enum.weight_loss">
+                <cqs-radio fieldname="weight_loss"
+          ng-class="{'has-error':errors.weight_loss}"
+                           attribute="form.weight_loss"
+                           value="value"
+                           isrequired='required("StudyEnrollments.Visits.MPNSAFTSS.weight_loss", form, visit, studyEnrollment)'
+                           isdisabled="disabled"
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>(Absent)</td>
+              <td ng-repeat="value in enum.weight_loss">
+                {{value}}
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </fieldset>
+    
+    <div class='form-group'>
+      <label class='h4-label'>Record status:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.draftStatus}"
+        attribute='form.draftStatus'
+        collection='["Complete", "Incomplete"]'
+        isdisabled="disabled"
+        isrequired="true">
+      </cqs-select>
+    </div>
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+
+    <a ng-href="#/studyenrollments/{{studyEnrollment.id}}?tab=visitForms&visit={{ visit.id }}" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

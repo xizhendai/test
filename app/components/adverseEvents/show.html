@@ -1,0 +1,70 @@
+<div class='row'>
+  <h2 class='col-xs-10'>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id> </h2>
+  <h2 ng-show='adverseEvent.event.serious === "Yes"'class='col-xs-10'>
+    Study SAE Event ID: <ae-id aeid='adverseEvent.event_id'></ae-id>
+  </h2>
+</div>
+
+<div ng-if='message'>{{message}}</div>
+
+<fieldset>
+  <legend>Event tracking</legend>
+  <accordion close-others='true'>
+    <accordion-group ng-init="status.open = (activeFollowup === 'none') || (!activeFollowup && !hasFollowups())" is-open="status.open">
+      <accordion-heading>(0) Initial - Date of entry: {{adverseEvent.event.followup_date}}</accordion-heading>
+      <div class="panel-body">
+
+        <query-verify
+          data-object='adverseEvent.event'
+          is-disabled='disabled'
+          can-verify='{{canVerifyBase && !isLockedDown()}}'
+          can-query='{{canVerifyBase}}'
+          can-comment='{{canCommentBase}}'
+          verify='verifyObject(adverseEvent.event, "Adverse event", { id: adverseEvent.id, event: { _verify: true } })'
+          comment='comment()'
+          comment-text='commentText[0]'></query-verify>
+
+        <show-adverse-event
+          adverse-event='adverseEvent'
+          isdisabled='disabled'
+          enum='enum'
+          is-followup='false'
+          grades='["1","2","3","4","5"]'
+          requiredfunction='required'
+          categorytypes='category_types'
+          study-enrollment='studyEnrollment'></show-adverse-event>
+      </div>
+    </accordion-group>
+    <accordion-group ng-repeat='followup in adverseEvent.Followups' ng-init="followupStatus.open = (activeFollowup === followup.id) || (!activeFollowup && $last)" is-open="followupStatus.open">
+      <accordion-heading>({{$index+1}}) Follow-up ({{$index+1}}) - Date of entry: {{followup.event.followup_date}}</accordion-heading>
+      <div class="panel-body">
+
+        <query-verify
+          data-object='followup.event'
+          is-disabled='disabled'
+          can-verify='{{canVerifyFollowup && !isLockedDown()}}'
+          can-query='{{canVerifyFollowup}}'
+          can-comment='{{canCommentFollowup}}'
+          verify='verifyObject(followup.event, "Adverse event followup", { id: followup.id, event: { _verify: true } })'
+          comment='commentFollowup($index+1, followup)'
+          comment-text='commentText[$index+1]'></query-verify>
+
+        <show-adverse-event
+          adverse-event='followup'
+          isdisabled='disabled'
+          enum='enum'
+          is-followup='true'
+          grades='["1","2","3","4","5"]'
+          requiredfunction='required'
+          categorytypes='category_types'
+          study-enrollment='studyEnrollment'></show-adverse-event>
+      </div>
+    </accordion-group>
+  </accordion>
+</fieldset>
+
+<div>
+  <a ng-href='#/studyenrollments/{{studyEnrollment.id}}/adverseevents/{{adverseEvent.id}}/followups/new' class='btn btn-primary' ng-show='adverseEvent.event.serious === "Yes" && !isLockedDown() && canAdd'>New followup</a>
+  <a class='btn btn-primary' ng-href="#/studyenrollments/{{studyEnrollment.id}}/adverseevents/{{adverseEvent.id}}/edit" ng-show='canAdd && !isLockedDown() && adverseEvent.event.serious === "No"'>Edit</a>
+  <a ng-href='#/studyenrollments/{{studyEnrollment.id}}/adverseevents' class='btn btn-primary'>Back</a>
+</div>

@@ -1,0 +1,12 @@
+<h1>Users</h1>
+<table ng-table='tableParams' class="table table-bordered table-striped">
+  <tr ng-repeat='user in $data'>
+    <td data-title='"User"'>{{ user.username }}</td>
+    <td data-title='"First"'>{{ user.firstName }}</td>
+    <td data-title='"Last"'>{{ user.lastName }}</td>
+    <td data-title='"Admin"'>{{ user.admin ? 'Yes' : '' }}</td>
+  </tr>
+</table>
+<div class='text-right'>
+  <a ng-href='#/users/new' class='btn btn-success'>New User</a>
+</div>

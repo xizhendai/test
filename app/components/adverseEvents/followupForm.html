@@ -1,0 +1,21 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class='row'>
+  <h2 class='col-xs-12'>New SAE follow-up</h2>
+</div>
+<div class='row'>
+  <h2 class='col-xs-10'>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id> </h2>
+</div>
+<div ng-show='adverseEvent.event_id !== undefined && adverseEvent.event.serious === "Yes"' class='row'>
+  <h2 class='col-xs-10'>Study SAE Event ID: <ae-id aeid='adverseEvent.event_id'> </h2>
+</div>
+<div class='row'>
+  <h2 class='col-xs-10'>SAE Follow-up # {{ adverseEvent.Followups.length + 1 }} </h2>
+</div>
+<div class='row' ng-show='!disabled'>
+  <p class='error col-xs-12'>Data below are copied from previous entry. Please review all entries and make changes as needed before clicking submit</p>
+</div>
+
+<adverse-event></adverse-event>

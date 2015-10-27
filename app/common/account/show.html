@@ -1,0 +1,35 @@
+<h2>Project Roles</h2>
+<ul>
+  <li ng-repeat='role in roles'>{{ role }}</li>
+</ul>
+
+<div ng-if='type === "email"'>
+  <div class='row'>
+    <error-list errors='messages'>
+  </div>
+
+  <form ng-submit='changePassword()'>
+    <div class='row'>
+      <h3 class='col-xs-offset-4 col-xs-4'>Current password:</h3>
+      <div class='col-xs-offset-4 col-xs-4'>
+        <input type='password' ng-model='account.currentPassword' required ></input>
+      </div>
+    </div>
+    <div class='row'>
+      <h3 class='col-xs-offset-4 col-xs-4'>New password:</h3>
+      <div class='col-xs-offset-4 col-xs-4'>
+        <input type='password' ng-model='account.newPassword' required ></input>
+      </div>
+    </div>
+    <div class='row'>
+      <h3 class='col-xs-offset-4 col-xs-4'>New password (confirm):</h3>
+      <div class='col-xs-offset-4 col-xs-4'>
+        <input type='password' ng-model='account.passwordConfirmation' required ></input>
+      </div>
+    </div>
+    <br/>
+    <div class='row'>
+      <div class='col-xs-offset-6 col-xs-2'><button type='submit' class='btn btn-primary'>Change Password</button></div>
+    </div>
+  </form>
+</div>

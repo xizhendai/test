@@ -1,0 +1,247 @@
+<div class='row'>
+  <a ng-href="#/referenceranges/{{referenceRange.id}}/edit" ng-show='canEdit' class='btn btn-primary col-xs-offset-11 col-xs-1 edit-btn'>Edit</a>
+</div>
+<div class='row'>
+  <div class='col-xs-10'>
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='referenceRange'
+      can-verify='{{canVerify}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()' comment='comment(commentText)' comment-text='commentText'
+      ></query-verify>
+
+    Site: {{referenceRange.site_name}}
+    Start Date: {{referenceRange.start_date}}
+    End Date: {{referenceRange.end_date}}
+    <table class='table table-bordered table-striped'>
+      <thead>
+        <tr>
+          <td>Assay</td>
+          <td>Low Value</td>
+          <td>High Value</td>
+          <td>Units</td>
+        </tr>
+      </thead>
+      <tr>
+        <td>WBC</td>
+        <td>{{referenceRange.wbc.low_value}}</td>
+        <td>{{referenceRange.wbc.high_value}}</td>
+        <td>10^3/uL</td>
+      </tr>
+        <tr>
+          <td>RBC</td>
+          <td>{{referenceRange.rbc.low_value}}</td>
+          <td>{{referenceRange.rbc.high_value}}</td>
+          <td>10^6/uL</td>
+        </tr>
+        <tr>
+          <td>Hemoglobin</td>
+          <td>{{referenceRange.hemoglobin.low_value}}</td>
+          <td>{{referenceRange.hemoglobin.high_value}}</td>
+          <td>g/dL</td>
+        </tr>
+        <tr>
+          <td>Hematocrit</td>
+          <td>{{referenceRange.hematocrit.low_value}}</td>
+          <td>{{referenceRange.hematocrit.high_value}}</td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td>Platelet Count</td>
+          <td>{{referenceRange.plateletCount.low_value}}</td>
+          <td>{{referenceRange.plateletCount.high_value}}</td>
+          <td>10^3/uL</td>
+        </tr>
+        <tr>
+          <td>WBC (differential): Neutrophil</td>
+          <td>{{referenceRange.wbcNeutrophil.low_value}}</td>
+          <td>{{referenceRange.wbcNeutrophil.high_value}}</td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td>WBC (differential): Eosinophil</td>
+          <td>{{referenceRange.wbcEosinophil.low_value}}</td>
+          <td>{{referenceRange.wbcEosinophil.high_value}}</td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td>WBC (differential): Basophil</td>
+          <td>{{referenceRange.wbcBasophil.low_value}}</td>
+          <td>{{referenceRange.wbcBasophil.high_value}}</td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td>WBC (differential): Lymphocyte</td>
+          <td>{{referenceRange.wbcLymphocyte.low_value}}</td>
+          <td>{{referenceRange.wbcLymphocyte.high_value}}</td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td>WBC (differential): Monocyte</td>
+          <td>{{referenceRange.wbcMonocyte.low_value}}</td>
+          <td>{{referenceRange.wbcMonocyte.high_value}}</td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td>WBC (differential): Blasts</td>
+          <td>{{referenceRange.wbcBlasts.low_value}}</td>
+          <td>{{referenceRange.wbcBlasts.high_value}}</td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td>WBC (differential): Promyelocytes</td>
+          <td>{{referenceRange.wbcPromyelocytes.low_value}}</td>
+          <td>{{referenceRange.wbcPromyelocytes.high_value}}</td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td>WBC (differential): Myelocytes</td>
+          <td>{{referenceRange.wbcMyelocytes.low_value}}</td>
+          <td>{{referenceRange.wbcMyelocytes.high_value}}</td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td>WBC (differential): Metamyelocytes</td>
+          <td>{{referenceRange.wbcMetamyelocytes.low_value}}</td>
+          <td>{{referenceRange.wbcMetamyelocytes.high_value}}</td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td>WBC (differential): Bands</td>
+          <td>{{referenceRange.wbcBands.low_value}}</td>
+          <td>{{referenceRange.wbcBands.high_value}}</td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td>Potassium</td>
+          <td>{{referenceRange.potassium.low_value}}</td>
+          <td>{{referenceRange.potassium.high_value}}</td>
+          <td>mEg/L</td>
+        </tr>
+        <tr>
+          <td>Serum Creatinine</td>
+          <td>{{referenceRange.serumCreatinine.low_value}}</td>
+          <td>{{referenceRange.serumCreatinine.high_value}}</td>
+          <td>mg/dL</td>
+        </tr>
+        <tr>
+          <td>Calcium</td>
+          <td>{{referenceRange.calcium.low_value}}</td>
+          <td>{{referenceRange.calcium.high_value}}</td>
+          <td>mg/dL</td>
+        </tr>
+        <tr>
+          <td>Total Bilirubin</td>
+          <td>{{referenceRange.totalBilirubin.low_value}}</td>
+          <td>{{referenceRange.totalBilirubin.high_value}}</td>
+          <td>mg/dL</td>
+        </tr>
+        <tr>
+          <td>Total Protein</td>
+          <td>{{referenceRange.totalProtein.low_value}}</td>
+          <td>{{referenceRange.totalProtein.high_value}}</td>
+          <td>g/dL</td>
+        </tr>
+        <tr>
+          <td>Albumin</td>
+          <td>{{referenceRange.albumin.low_value}}</td>
+          <td>{{referenceRange.albumin.high_value}}</td>
+          <td>g/dL</td>
+        </tr>
+        <tr>
+          <td>ALT (SGOT)</td>
+          <td>{{referenceRange.alt.low_value}}</td>
+          <td>{{referenceRange.alt.high_value}}</td>
+          <td>U/L</td>
+        </tr>
+        <tr>
+          <td>AST (SGPT)</td>
+          <td>{{referenceRange.ast.low_value}}</td>
+          <td>{{referenceRange.ast.high_value}}</td>
+          <td>U/L</td>
+        </tr>
+        <tr>
+          <td>Alkaline Phosphatase</td>
+          <td>{{referenceRange.alkalinePhosphatase.low_value}}</td>
+          <td>{{referenceRange.alkalinePhosphatase.high_value}}</td>
+          <td>U/L</td>
+        </tr>
+        <tr>
+          <td>Lactate Dehydrogenase</td>
+          <td>{{referenceRange.lactateDehydrogenase.low_value}}</td>
+          <td>{{referenceRange.lactateDehydrogenase.high_value}}</td>
+          <td>U/L</td>
+        </tr>
+        <tr>
+          <td>Glucose</td>
+          <td>{{referenceRange.glucose.low_value}}</td>
+          <td>{{referenceRange.glucose.high_value}}</td>
+          <td>mg/dL</td>
+        </tr>
+        <tr>
+          <td>Blood Urea Nitrogen (BUN)</td>
+          <td>{{referenceRange.bloodUreaNitrogen.low_value}}</td>
+          <td>{{referenceRange.bloodUreaNitrogen.high_value}}</td>
+          <td>mg/dL</td>
+        </tr>
+        <tr>
+          <td>Sodium</td>
+          <td>{{referenceRange.sodium.low_value}}</td>
+          <td>{{referenceRange.sodium.high_value}}</td>
+          <td>mEg/L</td>
+        </tr>
+        <tr>
+          <td>Chloride</td>
+          <td>{{referenceRange.chloride.low_value}}</td>
+          <td>{{referenceRange.chloride.high_value}}</td>
+          <td>mg/dL</td>
+        </tr>
+        <tr>
+          <td>Carbon Dioxide (CO2)</td>
+          <td>{{referenceRange.carbonDioxide.low_value}}</td>
+          <td>{{referenceRange.carbonDioxide.high_value}}</td>
+          <td>mmHg</td>
+        </tr>
+        <tr>
+          <td>Magnesium</td>
+          <td>{{referenceRange.magnesium.low_value}}</td>
+          <td>{{referenceRange.magnesium.high_value}}</td>
+          <td>mg/dL</td>
+        </tr>
+        <tr>
+          <td>Phosphorus</td>
+          <td>{{referenceRange.phosphorus.low_value}}</td>
+          <td>{{referenceRange.phosphorus.high_value}}</td>
+          <td>mg/dL</td>
+        </tr>
+        <tr>
+          <td>Uric Acid</td>
+          <td>{{referenceRange.uricAcid.low_value}}</td>
+          <td>{{referenceRange.uricAcid.high_value}}</td>
+          <td>mg/dL</td>
+        </tr>
+        <tr>
+          <td>INR</td>
+          <td>{{referenceRange.inr.low_value}}</td>
+          <td>{{referenceRange.inr.high_value}}</td>
+          <td>N/A</td>
+        </tr>
+        <tr>
+          <td>aPTT</td>
+          <td>{{referenceRange.aptt.low_value}}</td>
+          <td>{{referenceRange.aptt.high_value}}</td>
+          <td>seconds</td>
+        </tr>
+        <tr>
+          <td>HbA1c</td>
+          <td>{{referenceRange.hba1c.low_value}}</td>
+          <td>{{referenceRange.hba1c.high_value}}</td>
+          <td>%</td>
+        </tr>
+    </table>
+  </div>
+</div>
+

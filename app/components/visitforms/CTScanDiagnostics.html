@@ -1,0 +1,166 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>CT scan diagnostics</h2>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='form'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && form.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <fieldset>
+      <legend>Details</legend>
+      <div class='row'>
+        <h4 class='col-xs-1'>Visit</h4>
+        <input class='form-control, col-xs-4' ng-model='visit_type' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-3'>Date of clinical visit </h4>
+        <input class='form-control, col-xs-2' ng-model='visit.visit_date' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-1'>Form </h4>
+        <input class='form-control, col-xs-4' ng-disabled='true' value="CT scan diagnostics" />
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>CT scan performed</legend>
+      
+      <div class='form-group' ng-show='required("StudyEnrollments.Visits.CTScanDiagnostics.performed", form, visit, studyEnrollment)'>
+        <label class='h4-label'>Was CT scan for disease assessment performed for this study visit?</label>
+        <cqs-select
+          ng-class="{'has-error':errors.performed}"
+          attribute='form.performed'
+          collection='enum.performed'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.CTScanDiagnostics.performed", form, visit, studyEnrollment)'
+          change='clearData(form.performed==="Yes", [],["date_as_same_as_visit"]);'
+          ng-click='setDraft("Complete")'
+          draftstatus='form.draftStatus'>
+        </cqs-select>
+      </div>
+      
+      <div class='row' ng-show='form.performed === "No" && visit.visit_type === "Screening visit"'>
+        <div class="redborder heavy-text">
+          Patient is ineligible if CT scan for disease assessment not performed at screening.  Please correct and continue with form if this is a data entry error.  Otherwise, please submit this form without further data entry, inform the trial coordinating group at Vanderbilt, and do not enter further data for this patient.
+        </div>
+      </div>
+
+      <div class='form-group indent-1' 
+        ng-show='required("StudyEnrollments.Visits.CTScanDiagnostics.not_performed_reason", form, visit, studyEnrollment)'>
+        <br />
+        <label class='h4-label'>CT scan: reason not performed</label>
+        <cqs-select
+          ng-class="{'has-error':errors.not_performed_reason}"
+          attribute='form.not_performed_reason'
+          collection='enum.not_performed_reason'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.CTScanDiagnostics.not_performed_reason", form, visit, studyEnrollment)'
+          draftstatus='form.draftStatus'>
+        </cqs-select>
+      </div>
+
+      <div class='form-group indent-2' 
+        ng-show='required("StudyEnrollments.Visits.CTScanDiagnostics.not_performed_reason_other", form, visit, studyEnrollment)'>
+        <br />
+        <label class='h4-label'>CT scan: reason not performed - specify</label>
+        <cqs-area
+          ng-class="{'has-error':errors.not_performed_reason_other}"
+          attribute='form.not_performed_reason_other'
+          isdisabled='disabled'
+          placeholder="refusal reason"
+          isrequired='required("StudyEnrollments.Visits.CTScanDiagnostics.not_performed_reason_other", form, visit, studyEnrollment)'
+          draftstatus='form.draftStatus'>
+        </cqs-area>
+      </div>
+
+      <div class='form-group indent-1' ng-show='form.performed === "Yes"'>
+        <br />
+        <label class='h4-label'>CT scan: date performed</label>
+      </div>
+
+      <div class='form-group indent-1' ng-show='form.performed === "Yes"'>
+        <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+        <cqs-check 
+          attribute='form.date_as_same_as_visit'
+          ng-class="{'has-error':errors.date_as_same_as_visit}"
+          isdisabled='disabled'
+          ng-click='setDate("date_performed", form.date_as_same_as_visit)'
+          clearif='form.performed !== "Yes"'
+          draftstatus='form.draftStatus'>
+        </cqs-check>
+      </div>
+
+      <div class='form-group indent-1' ng-show='form.performed === "Yes"'>
+        <cqs-input 
+          attribute='form.date_performed'
+          label='labelService("StudyEnrollments.Visits.CTScanDiagnostics.date_performed")'
+          ng-class="{'has-error':errors.date_performed}"
+          isdisabled='disabled || form.date_as_same_as_visit'
+          placeholder="YYYY-MM-DD"
+          isrequired='required("StudyEnrollments.Visits.CTScanDiagnostics.date_performed", form, visit, studyEnrollment)'
+          warnings='warnings("StudyEnrollments.Visits.CTScanDiagnostics", "date_performed", form, visit)'
+          draftstatus='form.draftStatus'>
+        </cqs-input>
+      </div>
+
+    </fieldset>
+    <fieldset ng-show='(form.performed === "Yes")'>
+      <legend>CT scan findings</legend>
+      <div class='row' ng-show='required("StudyEnrollments.Visits.CTScanDiagnostics.spleen_volume", form, visit, studyEnrollment)'>
+        <h4 class='col-xs-3'>Spleen volume (cm^3)</h4>
+        <p class='col-xs-1'>
+          <cqs-input attribute='form.spleen_volume'
+          ng-class="{'has-error':errors.spleen_volume}"
+                     isdisabled='disabled'
+                     isrequired='required("StudyEnrollments.Visits.CTScanDiagnostics.spleen_volume", form, visit, studyEnrollment)'
+                     draftstatus='form.draftStatus'>
+          </cqs-input>
+        </p>
+      </div>
+      <div class='row' ng-show='required("StudyEnrollments.Visits.CTScanDiagnostics.liver_volume", form, visit, studyEnrollment)'>
+        <h4 class='col-xs-3'>Liver volume (cm^3)</h4>
+        <p class='col-xs-1'>
+          <cqs-input attribute='form.liver_volume'
+          ng-class="{'has-error':errors.liver_volume}"
+                     isdisabled='disabled'
+                     isrequired='required("StudyEnrollments.Visits.CTScanDiagnostics.liver_volume", form, visit, studyEnrollment)'
+                     draftstatus='form.draftStatus'>
+          </cqs-input>
+        </p>
+      </div>
+    </fieldset>
+
+    <div class='form-group'>
+      <label class='h4-label'>Record status:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.draftStatus}"
+        attribute='form.draftStatus'
+        collection='["Complete", "Incomplete"]'
+        isdisabled='disabled || (form.performed === "No" && visit.visit_type === "Screening visit")'
+        isrequired="true">
+      </cqs-select>
+    </div>
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+
+    <a ng-href="#/studyenrollments/{{studyEnrollment.id}}?tab=visitForms&visit={{ visit.id }}" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

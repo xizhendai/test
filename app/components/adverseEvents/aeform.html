@@ -1,0 +1,327 @@
+<form ng-submit="submit()">
+  <div ng-show='isFollowup === true'>
+    <fieldset>
+      <legend>Event tracking</legend>
+      <div class='form-group'>
+        <label class="h4-label">Follow-up date:</label>
+        <cqs-input 
+          ng-class="{'has-error':errors['event.followup_date'], 'is-followup': isFollowup && !disabled}"
+          attribute='form.event.followup_date'
+          isdisabled='disabled'
+          placeholder='YYYY-MM-DD'
+          isrequired='isFollowup === true'
+          warnings='warnings("StudyEnrollments.components.adverse_event","followup_date",form.event, adverseEvent)'>
+        </cqs-input>
+      </div>
+
+      <div class='form-group'>
+        <br />
+        <label class="h4-label">Follow-up comments:</label>
+        <cqs-area 
+          ng-class="{'has-error':errors['event.followup_comment'], 'is-followup': isFollowup && !disabled}"
+          attribute='form.event.followup_comment'
+          isdisabled='disabled'
+          isrequired='isFollowup === true'>
+        </cqs-area>
+      </div>
+    </fieldset>
+  </div>
+
+  <fieldset>
+    <legend>AE details</legend>
+    <div class='form-group'>
+      <label class="h4-label">Event category:</label>
+      <cqs-select class="info"
+        ng-class="{'has-error':errors['event.event_category'], 'is-followup': isFollowup && !disabled}"
+        attribute='form.event.event_category'
+        collection='enum.event_category'
+        isdisabled='disabled'
+        isrequired="true"
+        change='getGrades()'>
+      </cqs-select>
+    </div>
+
+    <div ng-repeat='pair in category_types'
+      ng-show='form.event.event_category === pair.category'>
+      <div class='form-group indent-1'>
+        <br />
+        <label class="h4-label">Event type:</label>
+        <cqs-select
+          ng-class="{'has-error':errors['event.'+pair.type+'_event_type'], 'is-followup': isFollowup && !disabled}"
+          attribute='form.event[pair.type+"_event_type"]'
+          collection='enum[pair.type+"_event_type"]'
+          isdisabled='disabled'
+          isrequired="form.event.event_category === pair.category"
+          change='getGrades()'>
+        </cqs-select>
+      </div>
+
+      <div class='form-group indent-2' ng-show='form.event[pair.type+"_event_type"].search("Other, specify") >= 0'>
+        <br />
+        <label class="h4-label">If other event, specify:</label>
+        <cqs-input
+          ng-class="{'has-error':errors['event.other_event_specify'], 'is-followup': isFollowup && !disabled}"
+          attribute='form.event.other_event_specify'
+          isdisabled='disabled'
+          isrequired='form.event[pair.type+"_event_type"].search("Other, specify") >= 0'>
+        </cqs-input>
+      </div>
+    </div>
+
+    <div class='form-group'>
+      <br />
+      <label class="h4-label">Is this event resolved or ongoing?</label>
+      <cqs-select
+        ng-class="{'has-error':errors['event.ongoing'], 'is-followup': isFollowup && !disabled}"
+        attribute='form.event.ongoing'
+        collection='enum.ongoing'
+        isdisabled='disabled || form.event.grade === "5"'
+        isrequired="true">
+      </cqs-select>
+    </div>
+
+    <div class='form-group'>
+      <br />
+      <label class="h4-label">Event start date:</label>
+      <cqs-input
+        ng-class="{'has-error':errors['event.start_date'], 'is-followup': isFollowup && !disabled}"
+        attribute='form.event.start_date'
+        isdisabled='disabled'
+        placeholder='YYYY-MM-DD'
+        isrequired='true'>
+      </cqs-input>
+    </div>
+
+    <div class='form-group' ng-show='required("StudyEnrollments.components.adverse_event.end_date", form.event)'>
+      <br />
+      <label class="h4-label">Event end date:</label>
+      <cqs-input
+        ng-class="{'has-error':errors['event.end_date'], 'is-followup': isFollowup && !disabled}"
+        attribute='form.event.end_date'
+        isdisabled='disabled'
+        placeholder='YYYY-MM-DD'
+        isrequired='required("StudyEnrollments.components.adverse_event.end_date", form.event)'>
+      </cqs-input>
+    </div>
+
+    <div class='form-group'>
+      <br />
+      <label class="h4-label">Grade (CTCAE 4.03):</label>
+      <cqs-select
+        ng-class="{'has-error':errors['event.grade'], 'is-followup': isFollowup && !disabled}"
+        attribute='form.event.grade'
+        collection='eventTypeGrades'
+        isdisabled='disabled'
+        isrequired="true"
+        change='isDead()'>
+      </cqs-select>
+    </div>
+
+    <div class='row'>
+      <br />
+      <h4 class='col-xs-12'>Please select level of attribution for each of the following possible causes of this event:</h4>
+      <div class='col-xs-9'>
+        <table class="table table-bordered table-striped radio-table" ng-class="{'has-error':errors['event.attribution'], 'is-followup': isFollowup && !disabled}">
+          <thead>
+            <th></th>
+            <th class='radio-cell' ng-repeat='value in enum.disease_attribution'>{{ value }}</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td class='radio-fieldname'>Disease</td>
+              <td class='radio-cell' ng-repeat='value in enum.disease_attribution'>
+                <cqs-radio
+                  ng-class="{'has-error':errors['event.disease_attribution'], 'is-followup': isFollowup && !disabled}"
+                  attribute='form.event.disease_attribution'
+                  value='value'
+                  fieldname='Disease'
+                  isdisabled='disabled'
+                  isrequired='true'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td class='radio-fieldname'>Study drug: TGR1202</td>
+              <td class='radio-cell' ng-repeat='value in enum.tgr1202_attribution'>
+                <cqs-radio
+                  ng-class="{'has-error':errors['event.tgr1202_attribution'], 'is-followup': isFollowup && !disabled}"
+                  attribute='form.event.tgr1202_attribution'
+                  value='value'
+                  fieldname='tgr1202'
+                  isdisabled='disabled'
+                  isrequired='true'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td class='radio-fieldname'>Study drug: Ruxolitinib</td>
+              <td class='radio-cell' ng-repeat='value in enum.ruxolitinib_attribution'>
+                <cqs-radio
+                  ng-class="{'has-error':errors['event.ruxolitinib_attribution'], 'is-followup': isFollowup && !disabled}"
+                  attribute='form.event.ruxolitinib_attribution'
+                  value='value'
+                  fieldname='ruxolitinib'
+                  isdisabled='disabled'
+                  isrequired='true'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td class='radio-fieldname'>Study procedure (please specify)</td>
+              <td class='radio-cell' ng-repeat='value in enum.procedure_attribution'>
+                <cqs-radio
+                  ng-class="{'has-error':errors['event.procedure_attribution'], 'is-followup': isFollowup && !disabled}"
+                  attribute='form.event.procedure_attribution'
+                  value='value'
+                  fieldname='procedure'
+                  isdisabled='disabled'
+                  isrequired='true'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td class='radio-fieldname'>Other (please specify)</td>
+              <td class='radio-cell' ng-repeat='value in enum.other_attribution'>
+                <cqs-radio
+                  ng-class="{'has-error':errors['event.other_attribution'], 'is-followup': isFollowup && !disabled}"
+                  attribute='form.event.other_attribution'
+                  value='value'
+                  fieldname='other'
+                  isdisabled='disabled'
+                  isrequired='true'>
+                </cqs-radio>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class='form-group'
+      ng-show='required("StudyEnrollments.components.adverse_event.procedure_attribution_specify", form.event)'>
+      <br />
+      <label class="h4-label">For study procedure attribution, specify procedure:</label>
+      <cqs-input
+        ng-class="{'has-error':errors['event.procedure_attribution_specify'], 'is-followup': isFollowup && !disabled}"
+        attribute='form.event.procedure_attribution_specify'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.components.adverse_event.procedure_attribution_specify", form.event)'></cqs-input>
+    </div>
+
+    <div class='form-group'
+      ng-show='required("StudyEnrollments.components.adverse_event.other_attribution_specify", form.event)'>
+      <br />
+      <label class="h4-label">For other attribution, specify other cause:</label>
+      <cqs-input
+        ng-class="{'has-error':errors['event.other_attribution_specify'], 'is-followup': isFollowup && !disabled}"
+        attribute='form.event.other_attribution_specify'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.components.adverse_event.other_attribution_specify", form.event)'></cqs-input>
+    </div>
+
+    <div class='form-group'
+      ng-show='required("StudyEnrollments.components.adverse_event.is_dlt", form.event, form, grandparent)'>
+      <br />
+      <label class="h4-label">Is this adverse event considered a DLT?</label>
+      <cqs-select
+        ng-class="{'has-error':errors['event.is_dlt'], 'is-followup': isFollowup && !disabled}"
+        attribute='form.event.is_dlt'
+        collection='enum.is_dlt'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.components.adverse_event.is_dlt", form.event, form, grandparent)'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.components.adverse_event.dlt_reason", form.event)'>
+      <br />
+      <label class="h4-label">DLT: provide reason</label>
+      <cqs-select
+        ng-class="{'has-error':errors['event.dlt_reason'], 'is-followup': isFollowup && !disabled}"
+        attribute='form.event.dlt_reason'
+        collection='enum.dlt_reason'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.components.adverse_event.dlt_reason", form.event)'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-2' 
+      ng-show='required("StudyEnrollments.components.adverse_event.dlt_reason_other", form.event)'>
+      <br />
+      <label class="h4-label">DLT reason: specify other</label>
+      <cqs-input
+        ng-class="{'has-error':errors['event.dlt_reason_other'], 'is-followup': isFollowup && !disabled}"
+        attribute='form.event.dlt_reason_other'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.components.adverse_event.dlt_reason_other", form.event)'>
+      </cqs-input>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='form.event.is_dlt === "Yes"'>
+      <br />
+      <label class="h4-label">DLT comment (optional)</label>
+      <cqs-area
+        ng-class="{'has-error':errors['event.dlt_comment'], 'is-followup': isFollowup && !disabled}"
+        attribute='form.event.dlt_comment'
+        isdisabled='disabled'
+        isrequired='false'></cqs-input>
+    </div>
+
+    <div class='form-group'>
+      <br />
+      <label class="h4-label">Is this adverse event considered serious (SAE)?</label>
+      <cqs-select
+        ng-class="{'has-error':errors['event.serious'], 'is-followup': isFollowup && !disabled}"
+        attribute='form.event.serious'
+        collection='enum.serious'
+        isdisabled='form.event.grade === "5" || disabled'
+        isrequired="true">
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.components.adverse_event.serious_reason", form.event)'>
+      <br />
+      <label class="h4-label">SAE reason:</label>
+      <cqs-select
+        ng-class="{'has-error':errors['event.serious_reason'], 'is-followup': isFollowup && !disabled}"
+        attribute='form.event.serious_reason'
+        collection='enum.serious_reason'
+        isdisabled='form.event.grade === "5" || disabled'
+        isrequired='required("StudyEnrollments.components.adverse_event.serious_reason", form.event)'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-1'
+      ng-show='required("StudyEnrollments.components.adverse_event.serious_comments", form.event)'>
+      <br />
+      <label class="h4-label">SAE: additional information or comments</label>
+      <cqs-input
+        ng-class="{'has-error':errors['event.serious_comments'], 'is-followup': isFollowup && !disabled}"
+        attribute='form.event.serious_comments'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.components.adverse_event.serious_comments", form.event)'>
+      </cqs-input>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.components.adverse_event.serious_report_date", form.event)'>
+      <br />
+      <label class="h4-label">SAE: IRB report date</label>
+      <cqs-input
+        ng-class="{'has-error':errors['event.serious_report_date'], 'is-followup': isFollowup && !disabled}"
+        attribute='form.event.serious_report_date'
+        isdisabled='disabled'
+        placeholder='YYYY-MM-DD'
+        isrequired='required("StudyEnrollments.components.adverse_event.serious_report_date", form.event)'>
+      </cqs-input>
+    </div>
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary' type='submit' ng-hide="disabled || submitted">Submit</button>
+    <a ng-show='isFollowup && !disabled && !submitted' ng-href='#/studyenrollments/{{studyEnrollment.id}}/adverseevents/{{adverseEvent.id}}' class='btn btn-primary'>Cancel</a>
+    <a ng-show='!isFollowup && !disabled && !submitted' ng-href='#/studyenrollments/{{studyEnrollment.id}}/adverseevents' class='btn btn-primary'>Cancel</a>
+  </div>
+</form>

@@ -1,0 +1,384 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>Drug administration</h2>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='form'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && form.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <fieldset>
+      <legend>Details</legend>
+      <div class='row'>
+        <h4 class='col-xs-1'>Visit</h4>
+        <input class='form-control, col-xs-4' ng-model='visit_type' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-3'>Date of clinical visit </h4>
+        <input class='form-control, col-xs-2' ng-model='visit.visit_date' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-1'>Form </h4>
+        <input class='form-control, col-xs-4' ng-disabled='true' value="Drug administration" />
+      </div>
+    </fieldset>
+
+    <div class='form-group' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.dose_adjustment", form, visit, studyEnrollment)'>
+      <label class='h4-label'>Were any dose adjustments made at this visit?</label>
+      <cqs-select
+        ng-class="{'has-error':errors.dose_adjustment}"
+        attribute='form.dose_adjustment'
+        collection='enum.dose_adjustment'
+        isdisabled='dose_adjustment_fixed || disabled'
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.dose_adjustment", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.indicate_adjustment_tgr1202", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Please indicate which drug(s) was(were) dose-adjusted:</label>
+    </div>
+
+    <div class="form-group indent-1" 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.indicate_adjustment_tgr1202", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label' style="width:100px;">TGR-1202</label>
+      <label class='radio-inline' ng-repeat='value in enum.indicate_adjustment_tgr1202'>
+        <cqs-radio fieldname='indicate_adjustment_tgr1202'
+          ng-class="{'has-error':errors.indicate_adjustment_tgr1202}"
+           attribute='form.indicate_adjustment_tgr1202'
+           value='value'
+           isdisabled='indicate_adjustment_fixed || disabled'
+           isrequired='required("StudyEnrollments.Visits.DrugAdministration.indicate_adjustment_tgr1202", form, visit, studyEnrollment) && !form.indicate_adjustment_tgr1202'
+           draftstatus='form.draftStatus'>
+        </cqs-radio>{{value}}
+      </label>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.indicate_adjustment_Ruxolitinib", form, visit, studyEnrollment)'>
+      <label class="h4-label" style="width:100px;">Ruxolitinib</label>
+      <label class='radio-inline' ng-repeat='value in enum.indicate_adjustment_Ruxolitinib'>
+        <cqs-radio fieldname='indicate_adjustment_Ruxolitinib'
+          ng-class="{'has-error':errors.indicate_adjustment_Ruxolitinib}"
+                   attribute='form.indicate_adjustment_Ruxolitinib'
+                   value='value'
+                   isdisabled='indicate_adjustment_fixed || disabled'
+                   isrequired='required("StudyEnrollments.Visits.DrugAdministration.indicate_adjustment_Ruxolitinib", form, visit, studyEnrollment) && !form.indicate_adjustment_Ruxolitinib'
+                   draftstatus='form.draftStatus'>
+        </cqs-radio>{{value}}
+      </label>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.dose_adjustment_reason", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Reason for dose adjustment:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.dose_adjustment_reason}"
+        attribute='form.dose_adjustment_reason'
+        collection='enum.dose_adjustment_reason' isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.dose_adjustment_reason", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-2' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.specify_adverse_event", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Specify adverse event:</label>
+      <cqs-area 
+        attribute='form.specify_adverse_event'
+        ng-class="{'has-error':errors.specify_adverse_event}"
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.specify_adverse_event", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-area>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.dose_adjustment_type", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Dose adjustment type:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.dose_adjustment_type}"
+        attribute='form.dose_adjustment_type'
+        collection='enum.dose_adjustment_type'
+        isdisabled='dose_adjustment_type_fixed || disabled'
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.dose_adjustment_type", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class="row" 
+      ng-hide='(visit.cycle_day_c === "1" && visit.cycle_day_d === "1") || (!required("StudyEnrollments.Visits.DrugAdministration.tgr1202_dose", form, visit, studyEnrollment) && !required("StudyEnrollments.Visits.DrugAdministration.Ruxolitinib_dose", form, visit, studyEnrollment))'>
+      <div class="redborder heavy-text">
+          In below fields, please select actual dose ordered/dispensed at this visit. For dose delay, please select '0' for the drug(s) delayed.  
+      </div>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.tgr1202_dose", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>TGR-1202 dose (mg) ordered/dispensed at this visit</label>
+      <cqs-select
+        ng-class="{'has-error':errors.tgr1202_dose}"
+        attribute='form.tgr1202_dose'
+        collection='enum.tgr1202_dose'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.tgr1202_dose", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-1' 
+        ng-show='required("StudyEnrollments.Visits.DrugAdministration.Ruxolitinib_dose", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Ruxolitinib dose (mg) ordered/dispensed at this visit</label>
+      <cqs-select
+        ng-class="{'has-error':errors.Ruxolitinib_dose}"
+        attribute='form.Ruxolitinib_dose'
+        collection='enum.Ruxolitinib_dose'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.Ruxolitinib_dose", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-2' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.drug_administered", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Was study drug administered during this visit?</label>
+      <cqs-select
+        ng-class="{'has-error':errors.drug_administered}"
+        attribute='form.drug_administered'
+        collection='enum.drug_administered'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.drug_administered", form, visit, studyEnrollment)'
+        change='clearData(form.drug_administered==="Yes", [],["drug_date_as_same_as_visit"]);'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-3' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.reason_not_performed", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Drug administration during visit: reason not performed</label>
+      <cqs-select
+        ng-class="{'has-error':errors.reason_not_performed}"
+        attribute='form.reason_not_performed'
+        collection='enum.reason_not_performed'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.reason_not_performed", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-4' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.reason_not_performed_specify", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Drug administration during visit: reason not performed: specify</label>
+      <cqs-area
+        ng-class="{'has-error':errors.reason_not_performed_specify}"
+        attribute='form.reason_not_performed_specify'
+        isdisabled='disabled'
+        placeholder="other reason"
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.reason_not_performed_specify", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-area>
+    </div>
+
+    <div class='form-group indent-3' ng-show='form.drug_administered === "Yes"'>
+      <br />
+      <label class='h4-label'>Date of drug administration:</label>
+    </div>
+
+    <div class='form-group indent-3' ng-show='form.drug_administered === "Yes"'>
+      <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+        <cqs-check 
+          attribute='form.drug_date_as_same_as_visit'
+          ng-class="{'has-error':errors.drug_date_as_same_as_visit}"
+          isdisabled='disabled'
+          ng-click='setDate("drug_date_administered", form.drug_date_as_same_as_visit)'
+          draftstatus='form.draftStatus'>
+        </cqs-check>
+    </div>
+
+    <div class='form-group indent-3' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.drug_date_administered", form, visit, studyEnrollment)'>
+      <cqs-input 
+        attribute='form.drug_date_administered'
+        label='labelService("StudyEnrollments.Visits.DrugAdministration.drug_date_administered")'
+        ng-class="{'has-error':errors.drug_date_administered}"
+        isdisabled='disabled || form.drug_date_as_same_as_visit'
+        placeholder="YYYY-MM-DD"
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.drug_date_administered", form, visit, studyEnrollment)'
+        warnings='warnings("StudyEnrollments.Visits.DrugAdministration", "drug_date_administered", form, visit)'
+        draftstatus='form.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <div class='form-group indent-3' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.time_drug_administered", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Time of drug administration:</label>
+        <span>
+          <cqs-input attribute='form.time_drug_administered'
+          ng-class="{'has-error':errors.time_drug_administered}"
+                     isdisabled='disabled'
+                     placeholder="HH:MM AM/PM"
+                     isrequired='required("StudyEnrollments.Visits.DrugAdministration.time_drug_administered", form, visit, studyEnrollment)'
+                     draftstatus='form.draftStatus'>
+          </cqs-input>
+      <p>Time must be reported in the format HH:MM AM/PM</p>
+      </span>
+      </p>
+    </div>
+
+    <div class='form-group' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.patient_dose_missed", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Did patient miss any doses of study drug since last visit?</label>
+      <cqs-select
+        ng-class="{'has-error':errors.patient_dose_missed}"
+        attribute='form.patient_dose_missed'
+        collection='enum.patient_dose_missed'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.patient_dose_missed", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.tgr1202_number_missed", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>TGR-1202: number of missed doses</label>
+      <cqs-input 
+        attribute='form.tgr1202_number_missed'
+        ng-class="{'has-error':errors.tgr1202_number_missed}"
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.tgr1202_number_missed", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.Ruxolitinib_number_missed", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Ruxolitinib: number of missed doses</label>
+      <cqs-input 
+        attribute='form.Ruxolitinib_number_missed'
+        ng-class="{'has-error':errors.Ruxolitinib_number_missed}"
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.Ruxolitinib_number_missed", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.missed_dose_reason", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Missed doses: reason</label>
+      <cqs-select
+        ng-class="{'has-error':errors.missed_dose_reason}"
+        attribute='form.missed_dose_reason'
+        collection='enum.missed_dose_reason'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.missed_dose_reason", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-2' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.missed_dose_reason_specify", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Missed doses: other reason: specify</label>
+      <cqs-area
+        ng-class="{'has-error':errors.missed_dose_reason_specify}"
+        attribute='form.missed_dose_reason_specify'
+        isdisabled='disabled'
+        placeholder="other reason"
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.missed_dose_reason_specify", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-area>
+    </div>
+
+    <div class='form-group' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.pill_diary_collected", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Was patient pill diary for cycle 1 collected?</label>
+      <cqs-select
+        ng-class="{'has-error':errors.pill_diary_collected}"
+        attribute='form.pill_diary_collected'
+        collection='enum.pill_diary_collected'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.pill_diary_collected", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.pill_not_collected_reason", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Pill diary: reason not collected</label>
+      <cqs-select
+        ng-class="{'has-error':errors.pill_not_collected_reason}"
+        attribute='form.pill_not_collected_reason'
+        collection='enum.pill_not_collected_reason'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.pill_not_collected_reason", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-2' 
+      ng-show='required("StudyEnrollments.Visits.DrugAdministration.pill_not_collected_reason_specify", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Pill diary: other reason not collected</label>
+      <cqs-area
+        ng-class="{'has-error':errors.pill_not_collected_reason_specify}"
+        attribute='form.pill_not_collected_reason_specify'
+        isdisabled='disabled'
+        placeholder="other reason"
+        isrequired='required("StudyEnrollments.Visits.DrugAdministration.pill_not_collected_reason_specify", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-area>
+    </div>
+
+    <div class='form-group'>
+      <label class='h4-label'>Record status:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.draftStatus}"
+        attribute='form.draftStatus'
+        collection='["Complete", "Incomplete"]'
+        isdisabled="disabled"
+        isrequired="true">
+      </cqs-select>
+    </div>
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+
+    <a ng-href="#/studyenrollments/{{studyEnrollment.id}}?tab=visitForms&visit={{ visit.id }}" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

@@ -1,0 +1,234 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>Disease assessment</h2>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='form'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && form.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <fieldset>
+      <legend>Details</legend>
+      <div class='row'>
+        <h4 class='col-xs-1'>Visit</h4>
+        <input class='form-control, col-xs-4' ng-model='visit_type' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-3'>Date of clinical visit </h4>
+        <input class='form-control, col-xs-2' ng-model='visit.visit_date' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-1'>Form </h4>
+        <input class='form-control, col-xs-4' ng-disabled='true' value="Disease assessment" />
+      </div>
+    </fieldset>
+
+    <div class='form-group' 
+      ng-show='required("StudyEnrollments.Visits.DiseaseAssessment.disease_response", form, visit, studyEnrollment)'>
+      <label class='h4-label'>Disease response</label>
+      <cqs-select
+        ng-class="{'has-error':errors.disease_response}"
+        attribute='form.disease_response'
+        collection='enum.disease_response'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DiseaseAssessment.disease_response", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.DiseaseAssessment.inevaluable_reason", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Patient inevaluable: reason</label>
+      <cqs-select
+        ng-class="{'has-error':errors.inevaluable_reason}"
+        attribute='form.inevaluable_reason'
+        collection='enum.inevaluable_reason'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DiseaseAssessment.inevaluable_reason", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-2' 
+      ng-show='required("StudyEnrollments.Visits.DiseaseAssessment.inevaluable_reason_other", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Patient inevaluable: reason: specify</label>
+      <cqs-area
+        ng-class="{'has-error':errors.inevaluable_reason_other}"
+        attribute='form.inevaluable_reason_other'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DiseaseAssessment.inevaluable_reason_other", form, visit, studyEnrollment)'
+        rows='4'
+        draftstatus='form.draftStatus'>
+      </cqs-area>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.DiseaseAssessment.improved_in_Hepatosple", form, visit, studyEnrollment)'>
+      <h4 class='col-xs-11'>For clinical benefit, indicate yes or no for each category of benefit:</h4>
+      <div class="col-xs-5" ng-show='required("StudyEnrollments.Visits.DiseaseAssessment.improved_in_Hepatosple", form, visit, studyEnrollment)'>
+        <table class='table table-bordered table-striped radio-table'>
+          <thead>
+            <tr>
+              <th></th>
+              <th class='radio-cell' ng-repeat='value in enum.improved_in_Hepatosple'>{{ value }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class='radio-fieldname'>Improvement in hepatosplenomegaly</td>
+              <td class='radio-cell' ng-repeat='value in enum.improved_in_Hepatosple'>
+                <cqs-radio fieldname='improved_in_Hepatosple'
+                ng-class="{'has-error':errors.improved_in_Hepatosple}"
+                           attribute='form.improved_in_Hepatosple'
+                           value='value'
+                           isdisabled='disabled'
+                           isrequired='required("StudyEnrollments.Visits.DiseaseAssessment.improved_in_Hepatosple", form, visit, studyEnrollment)'
+                           clearif='!required("StudyEnrollments.Visits.DiseaseAssessment.improved_in_Hepatosple", form, visit, studyEnrollment)'
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td class='radio-fieldname'>Improvement in MPN-SAF TSS</td>
+              <td class='radio-cell' ng-repeat='value in enum.improved_in_MPN_SAF_TSS'>
+                <cqs-radio fieldname='improved_in_MPN_SAF_TSS'
+                ng-class="{'has-error':errors.improved_in_MPN_SAF_TSS}"
+                           attribute='form.improved_in_MPN_SAF_TSS'
+                           value='value'
+                           isdisabled='disabled'
+                           isrequired='required("StudyEnrollments.Visits.DiseaseAssessment.improved_in_MPN_SAF_TSS", form, visit, studyEnrollment)'
+                           clearif='!required("StudyEnrollments.Visits.DiseaseAssessment.improved_in_MPN_SAF_TSS", form, visit, studyEnrollment)'
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td class='radio-fieldname'>Improvement in blood counts</td>
+              <td class='radio-cell' ng-repeat='value in enum.improved_in_bloodcounts'>
+                <cqs-radio fieldname='improved_in_bloodcounts'
+                ng-class="{'has-error':errors.improved_in_bloodcounts}"
+                           attribute='form.improved_in_bloodcounts'
+                           value='value'
+                           isdisabled='disabled'
+                           isrequired='required("StudyEnrollments.Visits.DiseaseAssessment.improved_in_bloodcounts", form, visit, studyEnrollment)'
+                           clearif='!required("StudyEnrollments.Visits.DiseaseAssessment.improved_in_bloodcounts", form, visit, studyEnrollment)'
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class='form-group indent-2' 
+      ng-show='required("StudyEnrollments.Visits.DiseaseAssessment.improved_in_neutrophil", form, visit, studyEnrollment)'>
+      <br />
+      <h4 class='col-xs-10'>For blood-count benefit, indicate yes or no for each category of benefit:</h4>
+      <div class="col-xs-5">
+        <table class='table table-bordered table-striped radio-table'>
+          <thead>
+            <tr>
+              <th></th>
+              <th class='radio-cell' ng-repeat='value in enum.improved_in_neutrophil'>{{ value }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class='radio-fieldname'>Improvement in neutrophil counts</td>
+              <td class='radio-cell' ng-repeat='value in enum.improved_in_neutrophil'>
+                <cqs-radio fieldname='improved_in_neutrophil'
+                  ng-class="{'has-error':errors.improved_in_neutrophil}"
+                  attribute='form.improved_in_neutrophil'
+                  value='value'
+                  isdisabled='disabled'
+                  isrequired='required("StudyEnrollments.Visits.DiseaseAssessment.improved_in_neutrophil", form, visit, studyEnrollment)'
+                  clearif='!required("StudyEnrollments.Visits.DiseaseAssessment.improved_in_neutrophil", form, visit, studyEnrollment)'
+                  draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td class='radio-fieldname'>Improvement in hemoglobin level</td>
+              <td class='radio-cell' ng-repeat='value in enum.improved_in_hemoglobin'>
+                <cqs-radio fieldname='improved_in_hemoglobin'
+                  ng-class="{'has-error':errors.improved_in_hemoglobin}"
+                  attribute='form.improved_in_hemoglobin'
+                  value='value'
+                  isdisabled='disabled'
+                  isrequired='required("StudyEnrollments.Visits.DiseaseAssessment.improved_in_hemoglobin", form, visit, studyEnrollment)'
+                  clearif='!required("StudyEnrollments.Visits.DiseaseAssessment.improved_in_hemoglobin", form, visit, studyEnrollment)'
+                  draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td class='radio-fieldname'>Improvement in platelet counts</td>
+              <td class='radio-cell' ng-repeat='value in enum.improved_in_platelet'>
+                <cqs-radio fieldname='improved_in_platelet'
+                  ng-class="{'has-error':errors.improved_in_platelet}"
+                  attribute='form.improved_in_platelet'
+                  value='value'
+                  isdisabled='disabled'
+                  isrequired='required("StudyEnrollments.Visits.DiseaseAssessment.improved_in_platelet", form, visit, studyEnrollment)'
+                  clearif='!required("StudyEnrollments.Visits.DiseaseAssessment.improved_in_platelet", form, visit, studyEnrollment)'
+                  draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class='form-group' 
+      ng-show='required("StudyEnrollments.Visits.DiseaseAssessment.DIPSS_PLUS_score", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>DIPSS-PLUS score (MF patients only)</label>
+      <cqs-select
+        ng-class="{'has-error':errors.DIPSS_PLUS_score}"
+        attribute='form.DIPSS_PLUS_score'
+        collection='enum.DIPSS_PLUS_score'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.DiseaseAssessment.DIPSS_PLUS_score", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group'>
+      <br />
+      <label class='h4-label'>Record status:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.draftStatus}"
+        attribute='form.draftStatus'
+        collection='["Complete", "Incomplete"]'
+        isdisabled="disabled"
+        isrequired="true">
+      </cqs-select>
+    </div>
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+
+    <a ng-href="#/studyenrollments/{{studyEnrollment.id}}?tab=visitForms&visit={{visit.id}}" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

@@ -1,0 +1,11 @@
+<h1>User Roles</h1>
+<table ng-table='tableParams' class="table table-bordered table-striped">
+  <tr ng-repeat='role in $data'>
+    <td data-title='"User"'><a ng-href="#/roles/{{role.id}}">{{ role.username }}</a></td>
+    <td data-title='"Roles"'>{{ role.roles.join(', ') }}</td>
+    <td data-title='"Delete"'><button ng-click='destroy(role)' class='btn table-btn btn-danger'>Delete</button></td>
+  </tr>
+</table>
+<div class='text-right'>
+  <a ng-href='#/roles/new' class='btn btn-success'>New User Role</a>
+</div>

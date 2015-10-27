@@ -1,0 +1,227 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>Biomarker specimens</h2>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='form'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && form.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <fieldset>
+      <legend>Details</legend>
+      <div class='row'>
+        <h4 class='col-xs-1'>Visit</h4>
+        <input class='form-control, col-xs-4' ng-model='visit_type' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-3'>Date of clinical visit </h4>
+        <input class='form-control, col-xs-2' ng-model='visit.visit_date' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-1'>Form </h4>
+        <input class='form-control, col-xs-4' ng-disabled='true' value="Biomarker specimens" />
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>PB collection performed</legend>
+      
+      <div class='form-group'>
+        <label class='h4-label'>Was peripheral blood (PB) for biomarker correlative analysis collected for this study visit?</label>
+        <cqs-select
+          ng-class="{'has-error':errors.pb_performed}"
+          attribute='form.pb_performed'
+          collection='enum.pb_performed'
+          isdisabled='disabled'
+          isrequired="true"
+          change='clearData(form.pb_performed==="Yes", [], ["pb_date_as_same_as_visit"]);'
+          draftstatus='form.draftStatus'>
+        </cqs-select>
+      </div>
+
+      <div class='form-group indent-1'
+           ng-show='required("StudyEnrollments.Visits.BiomarkerSpecimens.pb_not_performed_reason", form, visit, studyEnrollment)'>
+        <br />
+        <label class='h4-label'>PB collection: reason not performed</label>
+        <cqs-select
+          ng-class="{'has-error':errors.pb_not_performed_reason}"
+          attribute='form.pb_not_performed_reason'
+          collection='enum.pb_not_performed_reason'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.BiomarkerSpecimens.pb_not_performed_reason", form, visit, studyEnrollment)'
+          draftstatus='form.draftStatus'>
+        </cqs-select>
+      </div>
+
+      <div class='form-group indent-2'
+           ng-show='required("StudyEnrollments.Visits.BiomarkerSpecimens.pb_not_performed_reason_other", form, visit, studyEnrollment)'>
+        <br />
+        <label class='h4-label'>PB collection: reason not performed: specify</label>
+        <cqs-area 
+          attribute='form.pb_not_performed_reason_other'
+          ng-class="{'has-error':errors.pb_not_performed_reason_other}"
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.BiomarkerSpecimens.pb_not_performed_reason_other", form, visit, studyEnrollment)'
+          draftstatus='form.draftStatus'>
+        </cqs-input>
+      </div>
+      
+      <div class='form-group indent-1' ng-show='(form.pb_performed === "Yes")'>
+        <br />
+        <label class='h4-label'>PB collection: date performed</label>
+      </div>
+
+      <div class='form-group indent-1' ng-show='(form.pb_performed === "Yes")'>
+        <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+        <cqs-check 
+          attribute='form.pb_date_as_same_as_visit'
+          ng-class="{'has-error':errors.pb_date_as_same_as_visit}"
+          isdisabled='disabled'
+          ng-click='setDate("pb_date_performed", form.pb_date_as_same_as_visit)'
+          draftstatus='form.draftStatus'>
+        </cqs-check>
+      </div>
+
+      <div class='form-group indent-1' 
+        ng-show='required("StudyEnrollments.Visits.BiomarkerSpecimens.pb_date_performed", form, visit, studyEnrollment)'>
+        <cqs-input 
+          attribute='form.pb_date_performed'
+          label='labelService("StudyEnrollments.Visits.BiomarkerSpecimens.pb_date_performed")'
+          ng-class="{'has-error':errors.pb_date_performed}"
+          isdisabled='disabled || form.pb_date_as_same_as_visit'
+          placeholder="YYYY-MM-DD"
+          isrequired='required("StudyEnrollments.Visits.BiomarkerSpecimens.pb_date_performed", form, visit, studyEnrollment)'
+          warnings='warnings("StudyEnrollments.Visits.BiomarkerSpecimens", "pb_date_performed", form, visit)'
+          draftstatus='form.draftStatus'>
+        </cqs-input>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Bone marrow collection performed</legend>
+      
+      <div class='form-group'>
+        <label class='h4-label'>Was bone marrow for biomarker correlative analysis collected for this study visit?</label>
+        <cqs-select
+          ng-class="{'has-error':errors.bm_performed}"
+          attribute='form.bm_performed'
+          collection='enum.bm_performed'
+          isdisabled='disabled'
+          isrequired='true'
+          change='clearData(form.bm_performed==="Yes", [], ["bm_date_as_same_as_visit"]);'
+          draftstatus='form.draftStatus'>
+        </cqs-select>
+      </div>
+
+      <div class='form-group indent-1'
+           ng-show='required("StudyEnrollments.Visits.BiomarkerSpecimens.bm_not_performed_reason", form, visit, studyEnrollment)'>
+        <br />
+        <label class='h4-label'>Bone marrow collection: reason not performed</label>
+        <cqs-select
+          ng-class="{'has-error':errors.bm_not_performed_reason}"
+          attribute='form.bm_not_performed_reason'
+          collection='enum.bm_not_performed_reason'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.BiomarkerSpecimens.bm_not_performed_reason", form, visit, studyEnrollment)'
+          draftstatus='form.draftStatus'>
+        </cqs-select>
+      </div>
+
+      <div class='form-group indent-2'
+           ng-show='required("StudyEnrollments.Visits.BiomarkerSpecimens.bm_not_performed_reason_other", form, visit, studyEnrollment)'>
+        <br />
+        <label class='h4-label'>Bone marrow collection: reason not performed: specify</label>        
+        <cqs-input 
+          attribute='form.bm_not_performed_reason_other'
+          ng-class="{'has-error':errors.bm_not_performed_reason_other}"
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.BiomarkerSpecimens.bm_not_performed_reason_other", form, visit, studyEnrollment)'
+          draftstatus='form.draftStatus'>
+        </cqs-input>
+      </div>
+
+      <div class='form-group indent-1'
+           ng-show='required("StudyEnrollments.Visits.BiomarkerSpecimens.bm_sample_type", form, visit, studyEnrollment)'>
+        <br />
+        <label class='h4-label'>Bone marrow for biomarker analysis: sample type</label>
+        <cqs-select
+          ng-class="{'has-error':errors.bm_sample_type}"
+          attribute='form.bm_sample_type'
+          collection='enum.bm_sample_type'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.BiomarkerSpecimens.bm_sample_type", form, visit, studyEnrollment)'
+          draftstatus='form.draftStatus'>
+        </cqs-select>
+      </div>
+
+      <div class='form-group indent-1' ng-show='(form.bm_performed === "Yes")'>
+        <br />
+        <label class='h4-label'>Bone marrow for biomarker analysis: date of collection</label>
+      </div>
+
+      <div class='form-group indent-1' ng-show='(form.bm_performed === "Yes")'>
+        <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+        <cqs-check 
+          attribute='form.bm_date_as_same_as_visit'
+          ng-class="{'has-error':errors.bm_date_as_same_as_visit}"
+          isdisabled='disabled'
+          ng-click='setDate("bm_date_performed", form.bm_date_as_same_as_visit)'
+          draftstatus='form.draftStatus'>
+        </cqs-check>
+      </div>
+      
+      <div class='form-group indent-1'
+           ng-show='required("StudyEnrollments.Visits.BiomarkerSpecimens.bm_date_performed", form, visit, studyEnrollment)'>
+        <cqs-input 
+          attribute='form.bm_date_performed'
+          label='labelService("StudyEnrollments.Visits.BiomarkerSpecimens.bm_date_performed")'
+          ng-class="{'has-error':errors.bm_date_performed}"
+          isdisabled='disabled || form.bm_date_as_same_as_visit'
+          placeholder="YYYY-MM-DD"
+          isrequired='required("StudyEnrollments.Visits.BiomarkerSpecimens.bm_date_performed", form, visit, studyEnrollment)'
+          warnings='warnings("StudyEnrollments.Visits.BiomarkerSpecimens", "bm_date_performed", form, visit)'
+          draftstatus='form.draftStatus'>
+        </cqs-input>
+
+        <div class="row" ng-show="form.bm_sample_type === 'Archival FFPE'">
+          <div class="col-xs-offset-5 redborder col-xs-4 heavy-text" >
+            For archival FFPE, enter date of <br />
+            ORIGINAL tissue collection, not date of<br /> 
+            accession of the archival tissue<br />
+          </div>
+        </div>
+
+      </div>
+    </fieldset>
+    <div class='form-group'>
+      <label class='h4-label'>Record status:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.draftStatus}"
+        attribute='form.draftStatus'
+        collection='["Complete", "Incomplete"]'
+        isdisabled="disabled"
+        isrequired="true">
+      </cqs-select>
+    </div>
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+
+    <a ng-href="#/studyenrollments/{{studyEnrollment.id}}?tab=visitForms&visit={{visit.id}}" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

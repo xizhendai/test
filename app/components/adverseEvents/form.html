@@ -1,0 +1,25 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class='row'>
+  <h2 class='col-xs-12'>{{action === 'new' ? 'New ':''}}Adverse Event</h2>
+</div>
+<div class='row'>
+  <h2 class='col-xs-10'>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></h2>
+</div>
+<div ng-show='adverseEvent.event_id !== undefined && adverseEvent.event.serious === "Yes"' class='row'>
+  <h2 class='col-xs-10'>Study SAE Event ID: <ae-id aeid='adverseEvent.event_id'> </h2>
+</div>
+
+<query-verify
+  data-object='adverseEvent.event'
+  is-disabled='disabled'
+  can-verify='{{canVerifyBase && !isLockedDown()}}'
+  can-query='{{canVerifyBase}}'
+  can-comment='{{canCommentBase}}'
+  verify='verifyObject(adverseEvent.event, "Adverse event", { id: adverseEvent.id, event: { _verify: true } })'
+  comment='comment()'
+  comment-text='commentText[0]'></query-verify>
+
+<adverse-event></adverse-event>

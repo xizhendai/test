@@ -1,0 +1,1005 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>{{referenceRange.id === undefined ? "New " : "" }}Reference Range table</legend>
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='referenceRange'
+      is-disabled='disabled'
+      can-verify='{{canVerify && referenceRange.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <div class='row'>
+      <div class='col-xs-2'>
+        <h4>Site name:</h4>
+        <cqs-select
+                    ng-class="{'has-error':errors.site_name}"
+                    attribute='referenceRange.site_name'
+                    collection='sites'
+                    isdisabled='disabled'
+                    isrequired="required('ReferenceRanges.site_name', referenceRange)"
+                    draftstats='referenceRange.draftStatus'>
+        </cqs-select>
+      </div>
+      <div class='col-xs-2'>
+        <h4>Start date:</h4>
+        <p>
+          <cqs-input
+            ng-class="{'has-error':errors.start_date}"
+            attribute='referenceRange.start_date' 
+            isdisabled="disabled" 
+            placeholder="YYYY-MM-DD"
+            isrequired="required('ReferenceRanges.start_date', referenceRange)" 
+            draftstatus='referenceRange.draftStatus'>
+          </cqs-input>
+        </p>
+      </div>
+      <div class='col-xs-2'>
+        <h4>End date:</h4>
+        <p>
+          <cqs-input
+            ng-class="{'has-error':errors.end_date}"
+            attribute='referenceRange.end_date' 
+            isdisabled="disabled" 
+            placeholder="YYYY-MM-DD"
+            isrequired="false" 
+            draftstatus='referenceRange.draftStatus'>
+          </cqs-input>
+        </p>
+      </div>
+    </div>
+    <br />
+    
+    <div class='row'>
+      <div class="col-xs-6 redborder heavy-text">
+        Note: Reference range does not expire if end date is not specified
+      </div>
+    </div>
+    <br />
+    <br />
+    
+    <div class='row'>
+      <div class='col-xs-10'>
+        <table class='table table-bordered table-striped'>
+          <thead>
+            <tr>
+              <td>Laboratory assay</td>
+              <td>Reference range - low value</td>
+              <td>Reference range - high value</td>
+              <td>Units</td>
+            </tr>
+          </thead>
+          <tr>
+            <td>WBC</td>
+            <td>
+              <cqs-input 
+                ng-class="{'has-error':errors['wbc.low_value']}"
+                attribute='referenceRange.wbc.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input 
+                ng-class="{'has-error':errors['wbc.high_value']}"
+                attribute='referenceRange.wbc.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>10^3/uL</td>
+          </tr>
+          <tr>
+            <td>RBC</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['rbc.low_value']}"
+                attribute='referenceRange.rbc.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['rbc.high_value']}"
+                attribute='referenceRange.rbc.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>10^6/uL</td>
+          </tr>
+          <tr>
+            <td>Hemoglobin</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['hemoglobin.low_value']}"
+                attribute='referenceRange.hemoglobin.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['hemoglobin.high_value']}"
+                attribute='referenceRange.hemoglobin.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>g/dL</td>
+          </tr>
+          <tr>
+            <td>Hematocrit</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['hematocrit.low_value']}"
+                attribute='referenceRange.hematocrit.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['hematocrit.high_value']}"
+                attribute='referenceRange.hematocrit.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>%</td>
+          </tr>
+          <tr>
+            <td>Platelet count</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['plateletCount.low_value']}"
+                attribute='referenceRange.plateletCount.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['plateletCount.high_value']}"
+                attribute='referenceRange.plateletCount.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>10^3/uL</td>
+          </tr>
+          <tr>
+            <td>WBC (differential): Neutrophil</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcNeutrophil.low_value']}"
+                attribute='referenceRange.wbcNeutrophil.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcNeutrophil.high_value']}"
+                attribute='referenceRange.wbcNeutrophil.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>%</td>
+          </tr>
+          <tr>
+            <td>WBC (differential): Eosinophil</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcEosinophil.low_value']}"
+                attribute='referenceRange.wbcEosinophil.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcEosinophil.high_value']}"
+                attribute='referenceRange.wbcEosinophil.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>%</td>
+          </tr>
+          <tr>
+            <td>WBC (differential): Basophil</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcBasophil.low_value']}"
+                attribute='referenceRange.wbcBasophil.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcBasophil.high_value']}"
+                attribute='referenceRange.wbcBasophil.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>%</td>
+          </tr>
+          <tr>
+            <td>WBC (differential): Lymphocyte</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcLymphocyte.low_value']}"
+                attribute='referenceRange.wbcLymphocyte.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcLymphocyte.high_value']}"
+                attribute='referenceRange.wbcLymphocyte.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>%</td>
+          </tr>
+          <tr>
+            <td>WBC (differential): Monocyte</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcMonocyte.low_value']}"
+                attribute='referenceRange.wbcMonocyte.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcMonocyte.high_value']}"
+                attribute='referenceRange.wbcMonocyte.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>%</td>
+          </tr>
+          <tr>
+            <td>WBC (differential): Blasts</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcBlasts.low_value']}"
+                attribute='referenceRange.wbcBlasts.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcBlasts.high_value']}"
+                attribute='referenceRange.wbcBlasts.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>%</td>
+          </tr>
+          <tr>
+            <td>WBC (differential): Promyelocytes</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcPromyelocytes.low_value']}"
+                attribute='referenceRange.wbcPromyelocytes.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcPromyelocytes.high_value']}"
+                attribute='referenceRange.wbcPromyelocytes.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>%</td>
+          </tr>
+          <tr>
+            <td>WBC (differential): Myelocytes</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcMyelocytes.low_value']}"
+                attribute='referenceRange.wbcMyelocytes.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcMyelocytes.high_value']}"
+                attribute='referenceRange.wbcMyelocytes.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>%</td>
+          </tr>
+          <tr>
+            <td>WBC (differential): Metamyelocytes</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcMetamyelocytes.low_value']}"
+                attribute='referenceRange.wbcMetamyelocytes.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcMetamyelocytes.high_value']}"
+                attribute='referenceRange.wbcMetamyelocytes.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>%</td>
+          </tr>
+          <tr>
+            <td>WBC (differential): Bands</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcBands.low_value']}"
+                attribute='referenceRange.wbcBands.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['wbcBands.high_value']}"
+                attribute='referenceRange.wbcBands.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>%</td>
+          </tr>
+          <tr>
+            <td>Potassium</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['potassium.low_value']}"
+                attribute='referenceRange.potassium.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['potassium.high_value']}"
+                attribute='referenceRange.potassium.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>mmol/L</td>
+          </tr>
+          <tr>
+            <td>Serum creatinine</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['serumCreatinine.low_value']}"
+                attribute='referenceRange.serumCreatinine.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['serumCreatinine.high_value']}"
+                attribute='referenceRange.serumCreatinine.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>mg/dL</td>
+          </tr>
+          <tr>
+            <td>Calcium</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['calcium.low_value']}"
+                attribute='referenceRange.calcium.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['calcium.high_value']}"
+                attribute='referenceRange.calcium.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>mg/dL</td>
+          </tr>
+          <tr>
+            <td>Total bilirubin</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['totalBilirubin.low_value']}"
+                attribute='referenceRange.totalBilirubin.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['totalBilirubin.high_value']}"
+                attribute='referenceRange.totalBilirubin.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>mg/dL</td>
+          </tr>
+          <tr>
+            <td>Total protein</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['totalProtein.low_value']}"
+                attribute='referenceRange.totalProtein.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['totalProtein.high_value']}"
+                attribute='referenceRange.totalProtein.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>g/dL</td>
+          </tr>
+          <tr>
+            <td>Albumin</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['albumin.low_value']}"
+                attribute='referenceRange.albumin.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['albumin.high_value']}"
+                attribute='referenceRange.albumin.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>g/dL</td>
+          </tr>
+          <tr>
+            <td>ALT (SGOT)</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['alt.low_value']}"
+                attribute='referenceRange.alt.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['alt.high_value']}"
+                attribute='referenceRange.alt.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>U/L</td>
+          </tr>
+          <tr>
+            <td>AST (SGPT)</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['ast.low_value']}"
+                attribute='referenceRange.ast.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['ast.high_value']}"
+                attribute='referenceRange.ast.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>U/L</td>
+          </tr>
+          <tr>
+            <td>Alkaline phosphatase</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['alkalinePhosphatase.low_value']}"
+                attribute='referenceRange.alkalinePhosphatase.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['alkalinePhosphatase.high_value']}"
+                attribute='referenceRange.alkalinePhosphatase.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>U/L</td>
+          </tr>
+          <tr>
+            <td>Lactate deyhdrogenase (LDH)</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['lactateDehydrogenase.low_value']}"
+                attribute='referenceRange.lactateDehydrogenase.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['lactateDehydrogenase.high_value']}"
+                attribute='referenceRange.lactateDehydrogenase.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>IU/L</td>
+          </tr>
+          <tr>
+            <td>Glucose</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['glucose.low_value']}"
+                attribute='referenceRange.glucose.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['glucose.high_value']}"
+                attribute='referenceRange.glucose.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>mg/dL</td>
+          </tr>
+          <tr>
+            <td>Blood urea nitrogen (BUN)</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['bloodUreaNitrogen.low_value']}"
+                attribute='referenceRange.bloodUreaNitrogen.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['bloodUreaNitrogen.high_value']}"
+                attribute='referenceRange.bloodUreaNitrogen.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>mg/dL</td>
+          </tr>
+          <tr>
+            <td>Sodium</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['sodium.low_value']}"
+                attribute='referenceRange.sodium.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['sodium.high_value']}"
+                attribute='referenceRange.sodium.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>mmol/L</td>
+          </tr>
+          <tr>
+            <td>Chloride</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['chloride.low_value']}"
+                attribute='referenceRange.chloride.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['chloride.high_value']}"
+                attribute='referenceRange.chloride.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>mmol/L</td>
+          </tr>
+          <tr>
+            <td>Carbon dioxide (CO2)</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['carbonDioxide.low_value']}"
+                attribute='referenceRange.carbonDioxide.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['carbonDioxide.high_value']}"
+                attribute='referenceRange.carbonDioxide.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>mmol/L</td>
+          </tr>
+          <tr>
+            <td>Magnesium</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['magnesium.low_value']}"
+                attribute='referenceRange.magnesium.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['magnesium.high_value']}"
+                attribute='referenceRange.magnesium.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>mg/dL</td>
+          </tr>
+          <tr>
+            <td>Phosphorus</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['phosphorus.low_value']}"
+                attribute='referenceRange.phosphorus.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['phosphorus.high_value']}"
+                attribute='referenceRange.phosphorus.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>mg/dL</td>
+          </tr>
+          <tr>
+            <td>Uric acid</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['uricAcid.low_value']}"
+                attribute='referenceRange.uricAcid.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['uricAcid.high_value']}"
+                attribute='referenceRange.uricAcid.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>mg/dL</td>
+          </tr>
+          <tr>
+            <td>Amylase</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['amylase.low_value']}"
+                attribute='referenceRange.amylase.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['amylase.high_value']}"
+                attribute='referenceRange.amylase.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>IU/L</td>
+          </tr>
+          <tr>
+            <td>Lipase</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['lipase.low_value']}"
+                attribute='referenceRange.lipase.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['lipase.high_value']}"
+                attribute='referenceRange.lipase.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>U/L</td>
+          </tr>
+          <tr>
+            <td>INR</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['inr.low_value']}"
+                attribute='referenceRange.inr.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['inr.high_value']}"
+                attribute='referenceRange.inr.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>N/A</td>
+          </tr>
+          <tr>
+            <td>aPTT</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['aptt.low_value']}"
+                attribute='referenceRange.aptt.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['aptt.high_value']}"
+                attribute='referenceRange.aptt.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>seconds</td>
+          </tr>
+          <tr>
+            <td>HbA1c</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['hba1c.low_value']}"
+                attribute='referenceRange.hba1c.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['hba1c.high_value']}"
+                attribute='referenceRange.hba1c.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>%</td>
+          </tr>
+          <tr>
+            <td>IgA</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['iga.low_value']}"
+                attribute='referenceRange.iga.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['iga.high_value']}"
+                attribute='referenceRange.iga.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>mg/dL</td>
+          </tr>
+          <tr>
+            <td>IgG</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['igg.low_value']}"
+                attribute='referenceRange.igg.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['igg.high_value']}"
+                attribute='referenceRange.igg.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>mg/dL</td>
+          </tr>
+          <tr>
+            <td>IgM</td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['igm.low_value']}"
+                attribute='referenceRange.igm.low_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.low_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>
+              <cqs-input
+                ng-class="{'has-error':errors['igm.high_value']}"
+                attribute='referenceRange.igm.high_value' 
+                isdisabled="disabled" 
+                isrequired="required('ReferenceRanges.components.assay.high_value', referenceRange)"
+                draftstatus='referenceRange.draftStatus'>
+              </cqs-input>
+            </td>
+            <td>mg/dL</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    
+    <br />
+    <br />
+    <div class='form-group'>
+      <label class='h4-label'>Record status:</label>
+      <cqs-select
+        attribute='referenceRange.draftStatus' 
+        collection='["Complete", "Incomplete"]'
+        isdisabled="disabled" 
+        isrequired="true">
+      </cqs-select>
+    </div>
+
+  </fieldset>
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+    <a ng-href="#/referenceranges/{{referenceRange.id}}/edit" class='btn btn-primary edit-btn' ng-show='canEdit && disabled'>Edit</a>
+    <a ng-href="#/referenceranges" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

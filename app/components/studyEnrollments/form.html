@@ -1,0 +1,148 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>
+      {{studyEnrollment.id === undefined ? "New ": ""}}
+      Study Enrollment: 
+      <hem-id ng-show='studyEnrollment.id !== undefined' siteid='details.patient_site_id' patientid='details.patient_study_id'></hem-id>
+    </legend>
+
+    <div class="form-group" 
+      ng-class="{'has-error':errors['Details.patient_site_id'], 'has-error':errors['Details.patient_study_id']}">
+      <label class='h4-label'>Patient study identifier:</label>
+      <br />
+      <br />
+      <h4 class='study-name'>1538 -</h4>
+      <cqs-input class="col-xs-1 patient-site-id"
+        ng-class="{'has-error':errors.patient_site_id}"
+        attribute='details.patient_site_id' 
+        isdisabled='disabled'
+        placeholder='Site ID'
+        isrequired='required("StudyEnrollments.Details.patient_site_id", studyEnrollment)'>
+      </cqs-input>
+      <h4 class='col-xs-1 dash'>-</h4>
+      <div class='col-xs-1 patient-study-id'>
+        <cqs-input
+          ng-class="{'has-error':errors.patient_study_id}"
+          attribute='details.patient_study_id' 
+          isdisabled='disabled'
+          placeholder='Patient ID'
+          isrequired='required("StudyEnrollments.Details.patient_study_id", studyEnrollment)'>
+        </cqs-input>
+      </div>
+    </div>
+
+    <br />
+    <br />
+    <br />
+
+    <div class="form-group" ng-class="{'has-error':errors.site_name}">
+      <label class="h4-label">Registering institution:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.site_name}"
+        attribute='studyEnrollment.site_name' collection='sites' isdisabled='disabled'
+        isrequired='required("StudyEnrollments.site_name", studyEnrollment)'>
+      </cqs-select>
+    </div>
+
+    <br />
+
+    <div class='form-group' ng-class="{'has-error':errors['Details.first_initial']}">
+      <label class="h4-label">Patient's first initial:</label>
+      <cqs-input
+          ng-class="{'has-error':errors.first_initial}"
+          attribute='details.first_initial'
+          isdisabled="disabled"
+          isrequired='required("StudyEnrollments.Details.first_initial", details)'
+          maxlength="1" />
+    </div>
+
+    <br />
+
+    <div class='form-group' ng-class="{'has-error':errors['Details.middle_initial']}">
+      <label class="h4-label">Patient's middle initial:</label>
+      <cqs-input
+        ng-class="{'has-error':errors.middle_initial}"
+        attribute='details.middle_initial'
+        isdisabled="disabled"
+        isrequired='false'
+        maxlength="1" />
+    </div>
+
+    <br />
+
+    <div class='form-group' ng-class="{'has-error':errors['Details.last_initial']}">
+      <label class="h4-label">Patient's last initial:</label>
+      <cqs-input
+        ng-class="{'has-error':errors.last_initial}"
+        attribute='details.last_initial'
+        isdisabled="disabled"
+        isrequired='required("StudyEnrollments.Details.last_initial", details)'
+        maxlength="1" />
+    </div>
+
+    <br />
+
+    <div class='form-group' ng-class="{'has-error':errors['Details.trial_stage']}">
+      <label class="h4-label">In which trial stage was patient enrolled?</label>
+      <cqs-select
+        ng-class="{'has-error':errors.trial_stage}"
+        attribute='details.trial_stage'
+        collection='trialStages'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Details.trial_stage", details)'>
+      </cqs-select>
+    </div>
+
+    <br />
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Details.stage_cohort", details)' 
+      ng-class="{'has-error':errors['Details.stage_cohort']}">
+      <label class="h4-label">Specify cohort:</label>
+      <cqs-input attribute='details.stage_cohort'
+        ng-class="{'has-error':errors.stage_cohort}"
+        isdisabled="disabled"
+        isrequired='required("StudyEnrollments.Details.stage_cohort", details)'>
+      </cqs-input>
+    </div>
+
+    <br />
+
+    <div class='form-group'
+      ng-show='action === "edit" && required("StudyEnrollments.Eligibility.eligible", eligibility)' 
+      ng-class="{'has-error':errors['Eligibility.eligible']}">
+      <label class="h4-label">Patient eligible for study?</label>
+      <cqs-select
+        ng-class="{'has-error':errors['Eligibility.eligible']}"
+                  attribute='eligibility.eligible'
+                  collection='["Yes","No"]'
+                  isdisabled='disabled'
+                  isrequired='required("StudyEnrollments.Eligibility.eligible", eligibility)'>
+      </cqs-select>
+    </div>
+
+    <br />
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Eligibility.reason_ineligible", eligibility)' 
+      ng-class="{'has-error':errors['Eligibility.reason_ineligible']}">
+      <label class="h4-label">Reason ineligible:</label>
+      <cqs-input
+        ng-class="{'has-error':errors['Eligibility.reason_ineligible']}"
+        attribute='eligibility.reason_ineligible'
+        isdisabled="disabled"
+        isrequired='required("StudyEnrollments.Eligibility.reason_ineligible", eligibility)' />
+    </div>
+
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+    <a ng-href="#/studyenrollments/{{studyEnrollment.id}}/edit" class='btn btn-primary edit-btn' ng-show='disabled'>Edit</a>
+    <a ng-href="#/studyenrollments" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

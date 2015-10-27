@@ -1,0 +1,79 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>{{commentForm.id === undefined ? "New ": ""}}Comment</h2>
+</div>
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='commentForm'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && commentForm.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <div class='form-group'>
+      <label class="h4-label">Date:</label>
+      <cqs-input 
+        ng-class="{'has-error':errors.date}"
+        attribute='commentForm.date'
+        isdisabled="disabled"
+        placeholder="YYYY-MM-DD"
+        isrequired='true'
+        draftstatus='commentForm.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class="h4-label">Comment(s):</label>
+      <cqs-area
+          ng-class="{'has-error':errors.comment}"
+          attribute='commentForm.comment'
+          isdisabled='disabled'
+          placeholder="Your Comment"
+          isrequired='true'
+          rows="4"
+          draftstatus='commentForm.draftStatus'>
+      </cqs-area>
+    </div>
+    
+    <br />
+
+    <div class='row'>
+      <h4 class='col-xs-10'>Comment entered by: {{ commentForm.enteredBy ? commentForm.enteredBy : username() }} </h4>
+    </div>
+    
+    <br />
+
+    <div class='form-group'>
+      <label class="h4-label">Record status:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.draftStatus}"
+        attribute='commentForm.draftStatus'
+        collection='["Complete", "Incomplete"]'
+        isdisabled="disabled"
+        isrequired="true">
+      </cqs-select>
+    </div>
+
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+    <a ng-href="#/studyenrollments/{{ studyEnrollment.id }}/comments/{{ commentForm.id }}/edit" class='btn btn-primary edit-btn' ng-show='canEdit && disabled && !isLockedDown()'>Edit</a>
+    <a ng-href="#/studyenrollments/{{ studyEnrollment.id }}?tab=logForms" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+
+</form>

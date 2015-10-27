@@ -1,0 +1,26 @@
+<div class='panel panel-default' ng-show='isDisabled || hasComments()'>
+  <div ng-show='isDisabled' class='panel-body'>
+    <div class='text-right'>
+      <a class='btn btn-primary' ng-show='canQuery === "true" && !isQueried()' ng-click='showComments=!showComments'>Query</a>
+      <a disabled class='btn btn-primary' ng-show='isQueried()'>Queried on {{queriedDate() | date : 'yyyy-MM-dd'}}</a>
+      <a class='btn btn-primary' ng-show='canVerify === "true" && !isVerified()' ng-click='verify()'>Verify</a>
+      <a disabled class='btn btn-primary' ng-show='canVerify !== "true" && !isVerified()'>Not Verified</a>
+      <a disabled class='btn btn-primary' ng-show='isVerified()'>Verified on {{verifiedDate() | date : 'yyyy-MM-dd'}}</a>
+    </div>
+    <div class='addComment space-top' ng-show='canComment && (showComments || isQueried())'>
+      <textarea ng-model='commentText' rows=3 style='width:100%;'></textarea>
+      <div class='text-right'>
+        <a class='btn btn-primary' ng-click='comment()'>Add Comment</a>
+      </div>
+    </div>
+  </div>
+  <table class='table table-striped comments' ng-show='hasComments()'>
+    <tbody>
+      <tr class='comment' ng-repeat='c in object.__comments'>
+        <td width='100%'>{{c.text}}</td>
+        <td class='author nowrap'>{{c.userId}}</td>
+        <td class='text-right timestamp nowrap'>{{c.timestamp | date : 'yyyy-MM-dd HH:mm'}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

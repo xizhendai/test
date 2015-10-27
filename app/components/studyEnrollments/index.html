@@ -1,0 +1,33 @@
+<div loading-overlay></div>
+<div ng-if='message'>{{message}}</div>
+<h1>Enrollment list</h1>
+<label>Search: <input ng-model="searchText"></label>
+<table ng-table='tableParams' class="table table-bordered table-striped">
+  <tr ng-repeat='enrollment in $data | filter:patientIdFilter()' ng-click="rowClick('/studyenrollments/'+enrollment.id)">
+    <td data-title="'Site name'" data-sortable="'site_name'">
+      {{ enrollment.site_name }}</td>
+    <td data-title="'Study identifier'" data-sortable="'hemid'">
+      <hem-id siteid='enrollment.Details.patient_site_id' patientid='enrollment.Details.patient_study_id'></hem-id>
+    </td>
+    <td data-title="'PI e-sig'"> 
+      <button ng-show='signable(enrollment) && canSign(enrollment) && !objectSigned(enrollment)' 
+        class='btn table-btn btn-success'
+        ng-click='signObject(enrollment); $event.stopPropagation();'>
+        SIGN
+      </button> 
+      <button ng-show='objectSigned(enrollment)' 
+        class='btn table-btn btn-success disabled'>
+        {{objectSignedDate(enrollment) | date : 'yyyy-MM-dd'}}
+      </button> 
+      <button ng-show='canSign(enrollment) && objectSigned(enrollment)' 
+        class='btn table-btn btn-danger'
+        ng-click='revokeObject(enrollment); $event.stopPropagation();'>
+        REVOKE 
+      </button> 
+    </td>
+    <td data-title="'Delete'"> <button ng-show='canDelete(enrollment)' ng-click='destroy(enrollment); $event.stopPropagation();' class='btn table-btn btn-danger'>Delete</button> </td>
+  </tr>
+</table>
+<div class="text-right">
+  <a ng-href='#/studyenrollments/new' ng-show='canCreate' class='btn btn-primary edit-btn'>New Study Enrollment</a>
+</div>

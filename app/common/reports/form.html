@@ -1,0 +1,38 @@
+<div loading-overlay></div>
+<h1>Reports</h1>
+<form ng-submit="submit()">
+  <fieldset class="border">
+    <legend class="border">Reports: HEM1538</legend>
+
+    <div class="form-group">
+      <label class="h4-label">Type:</label>
+      <select ng-model="selectedReport" ng-options="report.title for report in reports" ng-required="true">
+        <option value>Please Select</option>
+      </select>
+    </div>
+
+    <div class="form-group indent-1" ng-show="showDates(selectedReport.name)">
+      <label class="h3-label"> From </label>
+      <input type="text" ng-model="reportStart" ng-required="showDates(selectedReport.name)" placeholder="YYYY-MM-DD" />
+      <label class="h3-label"> Through </label>
+      <input type="text" ng-model="reportEnd" ng-required="showDates(selectedReport.name)" placeholder="YYYY-MM-DD" />
+    </div>
+
+    <br/>
+
+    <div class="form-group">
+      <label class="h4-label" ng-required="true">
+        Registering Institution(s):
+      </label>
+      <ul class="list-group">
+        <li ng-repeat="site in sitesList" class="list-group-item">
+          <label>
+            <input type="checkbox" checklist-model="sitesSelected" checklist-value="site"> {{site}}
+          </label>
+        </li>
+      </ul>
+    </div>
+
+    <button class='btn btn-primary edit-btn' type='submit' ng-disabled="!aSiteSelected()">Submit</button>
+  </fieldset>
+</form>

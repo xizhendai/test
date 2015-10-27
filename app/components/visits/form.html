@@ -1,0 +1,105 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+<div class="row">
+  <h2 class='col-xs-10'>{{visit.id === undefined ? "New ": ""}}Visit</h2>
+</div>
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='visit'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown()}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <div class="form-group">
+      <label class="h4-label">Visit type:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.visit_type}"
+        attribute='visit.visit_type'
+        collection='visitTypes'
+        isdisabled='disabled'
+        isrequired='true'>
+      </cqs-select>
+    </div>
+    
+    <div ng-show="required('StudyEnrollments.Visits.performed', visit)">
+      <br />
+      <div class='form-group indent-1'>
+        <label class='h4-label'>Was visit performed?</label>
+        <cqs-select
+          ng-class="{'has-error':errors.performed}"
+          attribute='visit.performed'
+          collection='["Yes","No"]'
+          isdisabled='disabled'
+          isrequired="required('StudyEnrollments.Visits.performed', visit)">
+        </cqs-select>
+      </div>
+      
+      <div class='form-group indent-2' ng-show='required("StudyEnrollments.Visits.not_performed_reason", visit)'>
+        <br />
+        <label class='h4-label'>Visit not performed: reason not performed</label>
+        <cqs-select
+          ng-class="{'has-error':errors.not_performed_reason}"
+          attribute='visit.not_performed_reason'
+          collection='notPerformedReasons'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.not_performed_reason", visit)'>
+        </cqs-select>
+      </div>
+
+      <div class='form-group indent-3' ng-show='required("StudyEnrollments.Visits.not_performed_reason_other", visit)'>
+        <br />
+        <label class='h4-label'>Visit not performed: reason not performed: specify</label>
+          <cqs-area 
+            ng-class="{'has-error':errors.not_performed_reason_other}"
+            attribute='visit.not_performed_reason_other'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.not_performed_reason_other", visit)'>
+          </cqs-area>
+      </div>
+
+    </div>
+    <br />
+    <div class='row' ng-show='required("StudyEnrollments.Visits.visit_date", visit, studyEnrollment)'>
+      <div class="redborder heavy-text col-xs-8" style="position:relative;bottom:15px;">
+        Visit date: Please enter date of CLINICAL visit associated with this study-calendar or unscheduled visit. If associated lab procedures were performed on separate days, dates of these procedures may be entered on the relevant forms
+      </div>
+      <p class='col-xs-2'>
+        <cqs-input 
+          ng-class="{'has-error':errors.visit_date}"
+          label="labelService('StudyEnrollments.Visits.visit_date')"
+        attribute='visit.visit_date'
+                   isdisabled='disabled'
+                   placeholder='YYYY-MM-DD'
+                   isrequired='required("StudyEnrollments.Visits.visit_date", visit, studyEnrollment)'
+                   warnings='warnings("StudyEnrollments.Visits", "visit_date", visit, studyEnrollment)'>
+        </cqs-input>
+      </p>
+    </div>
+    <div class='row' ng-show='required("StudyEnrollments.Visits.eot_completed", visit, studyEnrollment)'>
+      <label class='h4-label'>Was the patient removed from treatment, and EoT evaluations completed?</label>
+      <cqs-select
+        ng-class="{'has-error':errors.eot_completed}"
+        attribute='visit.eot_completed'
+        collection='["Yes","No"]'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.eot_completed", visit, studyEnrollment)'>
+      </cqs-select>
+    </div>
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+    <a ng-href="#/studyenrollments/{{ studyEnrollment.id }}?tab=visitForms" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

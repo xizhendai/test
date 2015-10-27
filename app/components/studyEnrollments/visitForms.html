@@ -1,0 +1,61 @@
+<div class='container-fluid'>
+  <p class='first-heading'>Visit forms</p>
+  <div ng-show='canAdd.Visits && !isLockedDown(true)' class='sub-module'>
+    <a ng-show='canAddVisits(true)' ng-href='#/studyenrollments/{{studyEnrollment.id}}/visits/new'>Add new visit</a>
+    <div ng-hide='canAddVisits(true)'>
+      Please complete Baseline covariates form on screening visit and save as Complete to continue adding visits.
+    </div>
+  </div>
+  <accordion close-others='true'>
+    <accordion-group ng-repeat='visit in studyEnrollment.Visits' ng-init="status.open = (visit.id === activeVisit) || (!activeVisit && $last)" is-open="status.open" >
+    <accordion-heading>{{ visitTitle(visit) }}</accordion-heading>
+      <div class="panel-body">
+        <div class='row'>
+          <a class='col-xs-2' ng-href='#/studyenrollments/{{studyEnrollment.id}}/visits/{{visit.id}}'>View visit details</a>
+          <span class='col-xs-10 text-right'>
+            <a class='btn btn-primary' ng-show='canDelete.Visits && $last && !isLockedDown(true)' ng-click='deleteResource("Visits", visit)'>Delete</a>
+            <a class='btn btn-primary'
+              ng-show='canVerify.Visits && !isLockedDown(true) && !objectVerified(visit)'
+              ng-click='verifyObject(visit, "Visit", {id: studyEnrollment.id, Visits: [{id: visit.id, _verify: true}]})'>
+              Verify
+            </a>
+            <a disabled class='btn btn-primary' ng-show='objectVerified(visit)'>Verified on {{objectVerifiedDate(visit) | date : 'yyyy-MM-dd'}}</a>
+          </span>
+        </div>
+      </div>
+      <table>
+        <tr ng-repeat='form in forms(visit)' ng-hide='isLockedDown(form.form === "BaselineCovariates") && !visit[form.form]'>
+          <td style='padding:8px;'>{{form.name}}</td>
+          <td colspan='5' ng-show='form.form === "Labs" && hasRanges === false'>
+            Please enter a Reference Range for this site to add Labs.
+          </td>
+          <td ng-hide='form.form === "Labs" && hasRanges === false'>
+            <a class='btn btn-primary' ng-show='canAdd.Visits && !isLockedDown(form.form === "BaselineCovariates")' ng-href='#/studyenrollments/{{studyEnrollment.id}}/visits/{{visit.id}}/{{form.form}}/edit'>{{visit[form.form] === undefined?"Add":"Edit"}}</a>
+          </td>
+          <td ng-hide='form.form === "Labs" && hasRanges === false'>
+            <a class='btn btn-primary' ng-href='#/studyenrollments/{{studyEnrollment.id}}/visits/{{visit.id}}/{{form.form}}' ng-hide='visit[form.form] === undefined'>View</a>
+          </td>
+          <td ng-hide='form.form === "Labs" && hasRanges === false'>
+            <a class='btn btn-primary' ng-click='deleteVisitForm(visit,form.form)' ng-hide='isLockedDown(true) || !canDelete.Visits || visit[form.form] === undefined'>Clear data</a>
+          </td>
+          <td ng-hide='form.form === "Labs" && hasRanges === false'>
+            <a disabled class='btn btn-primary '>
+              {{ visit[form.form] === undefined ? "Incomplete" : visit[form.form].draftStatus }}
+            </a>
+          </td>
+          <td ng-hide='form.form === "Labs" && hasRanges === false'>
+            <span ng-if='visit[form.form] !== undefined'>
+              <a class='btn btn-primary'
+                ng-show='canVerify[form.form] && !isLockedDown() && visit[form.form].draftStatus === "Complete" && !objectVerified(visit[form.form])'
+                ng-click='obj = {id: visit.id}; obj[form.form] = {_verify: true}; verifyObject(visit[form.form], form.name, {id: studyEnrollment.id, Visits: [obj]})'>
+                Verify
+              </a>
+              <a disabled class='btn btn-primary' ng-show='!(canVerify[form.form] && !isLockedDown() && visit[form.form].draftStatus === "Complete") && !objectVerified(visit[form.form])'>Not verified</a>
+              <a disabled class='btn btn-primary' ng-show='objectVerified(visit[form.form])'>Verified on {{objectVerifiedDate(visit[form.form]) | date : 'yyyy-MM-dd'}}</a>
+            </span>
+          </td>
+        </tr>
+      </table>
+    </accordion-group>
+  </accordion>
+</div>

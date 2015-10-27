@@ -1,0 +1,1681 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>Labs</h2>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='form'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && form.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <fieldset>
+      <legend>Details</legend>
+      <div class='row'>
+        <h4 class='col-xs-1'>Visit</h4>
+        <input class='form-control, col-xs-4' ng-model='visit_type' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-3'>Date of clinical visit </h4>
+        <input class='form-control, col-xs-2' ng-model='visit.visit_date' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-1'>Form </h4>
+        <input class='form-control, col-xs-4' ng-disabled='true' value="Labs" />
+      </div>
+    </fieldset>
+
+    <fieldset ng-show='required("StudyEnrollments.Visits.Labs.ekg_performed", form, visit, studyEnrollment)'>
+      <legend>EKG</legend>
+      <fieldset>
+        <legend>EKG performed</legend>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.Labs.ekg_performed", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Was EKG performed for this study visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.ekg_performed}"
+            attribute='form.ekg_performed'
+            collection='enum.ekg_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.ekg_performed", form, visit, studyEnrollment)'
+            change='clearData(form.ekg_performed==="Yes", [],["ekg_date_as_same_as_visit", "ekg_comments"]);'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.Labs.ekg_reason_not_performed", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>EKG: reason not performed</label>
+          <cqs-select
+            ng-class="{'has-error':errors.ekg_reason_not_performed}"
+            attribute='form.ekg_reason_not_performed'
+            collection='enum.ekg_reason_not_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.ekg_reason_not_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.Labs.ekg_reason_not_performed_specify", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>EKG: reason not performed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.ekg_reason_not_performed_specify}"
+            attribute='form.ekg_reason_not_performed_specify'
+            isdisabled='disabled'
+            placeholder="other reason"
+            isrequired='required("StudyEnrollments.Visits.Labs.ekg_reason_not_performed_specify", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.Labs.ekg_date_performed", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>EKG: date performed</label>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.Labs.ekg_date_performed", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+          <cqs-check 
+            attribute='form.ekg_date_as_same_as_visit'
+            ng-class="{'has-error':errors.ekg_date_as_same_as_visit}"
+            isdisabled='disabled'
+            ng-click='setDate("ekg_date_performed", form.ekg_date_as_same_as_visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.Labs.ekg_date_performed", form, visit, studyEnrollment)'>
+          <cqs-input 
+            attribute='form.ekg_date_performed'
+            label='labelService("StudyEnrollments.Visits.Labs.ekg_date_performed")'
+            ng-class="{'has-error':errors.ekg_date_performed}"
+            isdisabled='disabled || form.ekg_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.Labs.ekg_date_performed", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.Labs", "ekg_date_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+      </fieldset>
+      <fieldset ng-show='required("StudyEnrollments.Visits.Labs.ekg_QRS", form, visit, studyEnrollment) || required("StudyEnrollments.Visits.Labs.ekg_predose1_performed", form, visit, studyEnrollment)'>
+        <legend>EKG findings</legend>
+        <div class="row" ng-show='required("StudyEnrollments.Visits.Labs.ekg_QRS", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-2'>EKG: values</h4>
+        </div>
+
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.ekg_QRS", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-2'>QRS duration</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.ekg_QRS'
+          ng-class="{'has-error':errors.ekg_QRS}"
+                       isdisabled='disabled'
+                       isrequired='required("StudyEnrollments.Visits.Labs.ekg_QRS", form, visit, studyEnrollment)'
+                       draftstatus='form.draftStatus'>
+            </cqs-input>
+          </p>
+          <p>ms</p>
+        </div>
+        
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.ekg_RR", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-2'>RR interval</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.ekg_RR'
+          ng-class="{'has-error':errors.ekg_RR}"
+                       isdisabled='disabled'
+                       isrequired='required("StudyEnrollments.Visits.Labs.ekg_RR", form, visit, studyEnrollment)'
+                       draftstatus='form.draftStatus'>
+            </cqs-input>
+          </p>
+          <p>ms</p>
+        </div>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.ekg_PR", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-2'>PR interval</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.ekg_PR'
+          ng-class="{'has-error':errors.ekg_PR}"
+                       isdisabled='disabled'
+                       isrequired='required("StudyEnrollments.Visits.Labs.ekg_PR", form, visit, studyEnrollment)'
+                       draftstatus='form.draftStatus'>
+            </cqs-input>
+          </p>
+          <p>ms</p>
+        </div>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.ekg_QT", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-2'>QT interval</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.ekg_QT'
+          ng-class="{'has-error':errors.ekg_QT}"
+                       isdisabled='disabled'
+                       isrequired='required("StudyEnrollments.Visits.Labs.ekg_QT", form, visit, studyEnrollment)'
+                       draftstatus='form.draftStatus'>
+            </cqs-input>
+          </p>
+          <p>ms</p>
+        </div>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.Labs.ekg_significance", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Additional comments on EKG findings (optional):</label>
+          <cqs-area
+            ng-class="{'has-error':errors.ekg_comments}"
+            attribute='form.ekg_comments'
+            isdisabled='disabled'
+            isrequired='false'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.Labs.ekg_significance", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Overall interpretation of EKG clinical significance:</label>
+          <cqs-select
+            ng-class="{'has-error':errors.ekg_significance}"
+            attribute='form.ekg_significance'
+            collection='enum.ekg_significance'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.ekg_significance", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div ng-repeat='x in ["predose1", "predose2", "predose3", "postdose1", "postdose2", "postdose3"]'>
+          <fieldset ng-show='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_performed", form, visit, studyEnrollment)' ng-init="dosename = (x.substr(0, x.indexOf('dose')) + '-dose (replicate ' + x.substr(x.indexOf('dose')+4) + ')')">
+              <legend>EKG {{dosename}}</legend>
+              <!--pd1-->
+              
+              <div class='form-group' 
+                ng-show='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_performed", form, visit, studyEnrollment)'>
+                <label class='h4-label'>Was EKG {{dosename}} performed for this study visit?</label>
+                <cqs-select
+                  ng-class="{'has-error':errors['ekg_'+x+'_performed']}"
+                  attribute='form["ekg_" + x + "_performed"]'
+                  collection='enum["ekg_" + x + "_performed"]' isdisabled='disabled'
+                  isrequired='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_performed", form, visit, studyEnrollment)'
+                  change='clearData(form.ekg_performed==="Yes", [],["ekg_date_as_same_as_visit", "ekg_comments"]);'
+                  draftstatus='form.draftStatus'>
+                </cqs-select>
+              </div>
+
+              <div class='form-group indent-1' 
+                ng-show='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_reason_not_performed", form, visit, studyEnrollment)'>
+                <br />
+                <label class='h4-label'>EKG {{dosename}}: reason not performed</label>
+                <cqs-select 
+                  ng-class="{'has-error':errors['ekg_'+x+'_reason_not_performed']}"
+                  attribute='form["ekg_" + x + "_reason_not_performed"]'
+                  collection='enum["ekg_" + x + "_reason_not_performed"]'
+                  isdisabled='disabled'
+                  isrequired='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_reason_not_performed", form, visit, studyEnrollment)'
+                  draftstatus='form.draftStatus'>
+                </cqs-select>
+              </div>
+
+              <div class='form-group indent-2' 
+                ng-show='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_reason_not_performed_specify", form, visit, studyEnrollment)'>
+                <br />
+                <label class='h4-label'>EKG {{dosename}}: reason not performed: specify</label>
+                <cqs-area
+                  ng-class="{'has-error':errors['ekg_'+x+'_reason_not_performed_specify']}"
+                  attribute='form["ekg_" + x + "_reason_not_performed_specify"]'
+                  isdisabled='disabled'
+                  isrequired='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_reason_not_performed_specify", form, visit, studyEnrollment)'
+                  rows="2"
+                  draftstatus='form.draftStatus'>
+                </cqs-area>
+              </div>
+
+              <div class="form-group indent-1" 
+                ng-show='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_time", form, visit, studyEnrollment)'>
+                <br />
+                <label class='h4-label'>EKG {{dosename}}: time performed</label>
+                <span>
+                  <cqs-input 
+                    attribute='form["ekg_" + x + "_time"]'
+                    ng-class="{'has-error':errors['ekg_'+x+'_time']}"
+                    isdisabled='disabled'
+                    placeholder="HH:MM AM/PM"
+                    isrequired='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_time", form, visit, studyEnrollment)'
+                    draftstatus='form.draftStatus'>
+                  </cqs-input>
+                  <p>Time must be reported in the format HH:MM AM/PM</p>
+                </span>
+              </div>
+
+              <div class="form-group indent-1" ng-show='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_time", form, visit, studyEnrollment)'>
+                <br />
+                <label class='h4-label'>EKG {{dosename}}: values</label>
+              </div>
+
+              <div class='row' ng-show='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_QRS", form, visit, studyEnrollment)'>
+                <h4 class='col-xs-2 indent-2'>QRS duration</h4>
+                <p class="col-xs-1">
+                  <cqs-input attribute='form["ekg_" + x + "_QRS"]'
+                             ng-class="{'has-error':errors['ekg_'+x+'_QRS']}"
+                             isdisabled='disabled'
+                             isrequired='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_QRS", form, visit, studyEnrollment)'
+                             draftstatus='form.draftStatus'>
+                  </cqs-input>
+                </p>
+                <h4 class='col-xs-1'>ms</h4>
+              </div>
+              <div class='row' ng-show='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_RR", form, visit, studyEnrollment)'>
+                <h4 class='col-xs-2 indent-2'>RR interval</h4>
+                <p class="col-xs-1">
+                  <cqs-input attribute='form["ekg_" + x + "_RR"]'
+                             ng-class="{'has-error':errors['ekg_'+x+'_RR']}"
+                             isdisabled='disabled'
+                             isrequired='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_RR", form, visit, studyEnrollment)'
+                             draftstatus='form.draftStatus'>
+                  </cqs-input>
+                </p>
+                <h4 class='col-xs-1'>ms</h4>
+              </div>
+              <div class='row' ng-show='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_PR", form, visit, studyEnrollment)'>
+                <h4 class='col-xs-2 indent-2'>PR interval</h4>
+                <p class="col-xs-1">
+                  <cqs-input attribute='form["ekg_" + x + "_PR"]'
+                             ng-class="{'has-error':errors['ekg_'+x+'_PR']}"
+                             isdisabled='disabled'
+                             isrequired='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_PR", form, visit, studyEnrollment)'
+                             draftstatus='form.draftStatus'>
+                  </cqs-input>
+                </p>
+                <h4 class='col-xs-1'>ms</h4>
+              </div>
+              <div class='row' ng-show='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_QT", form, visit, studyEnrollment)'>
+                <h4 class='col-xs-2 indent-2'>QT interval</h4>
+                <p class="col-xs-1">
+                  <cqs-input attribute='form["ekg_" + x + "_QT"]'
+                             ng-class="{'has-error':errors['ekg_'+x+'_QT']}"
+                             isdisabled='disabled'
+                             isrequired='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_QT", form, visit, studyEnrollment)'
+                             draftstatus='form.draftStatus'>
+                  </cqs-input>
+                </p>
+                <h4 class='col-xs-1'>ms</h4>
+              </div>
+
+              <div class='form-group indent-1' 
+                ng-show='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_significance", form, visit, studyEnrollment)'>
+                <br />
+                <label class='h4-label'>Additional comments on EKG {{dosename}} findings (optional):</label>
+                <cqs-area
+                  ng-class="{'has-error':errors['ekg_'+x+'_comments']}"
+                  attribute='form["ekg_" + x + "_comments"]'
+                  isdisabled='disabled'
+                  placeholder="comments"
+                  isrequired='false'
+                  rows="1"
+                  draftstatus='form.draftStatus'>
+                </cqs-area>
+              </div>
+              
+              <div class='form-group indent-1' 
+                ng-show='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_significance", form, visit, studyEnrollment)'>
+                <br />
+                <label class='h4-label'>Overall interpretation of EKG {{dosename}} clinical significance</label>
+                <cqs-select 
+                  ng-class="{'has-error':errors['ekg_'+x+'_significance']}"
+                  attribute='form["ekg_" + x + "_significance"]'
+                  collection='enum["ekg_" + x + "_significance"]'
+                  isdisabled='disabled'
+                  isrequired='required("StudyEnrollments.Visits.Labs.ekg_" + x + "_significance", form, visit, studyEnrollment)'
+                  draftstatus='form.draftStatus'>
+                </cqs-select>
+              </div>
+
+          </fieldset>
+        </div>
+      </fieldset>
+    </fieldset>
+    <!--//end----1 -->
+
+    <fieldset>
+      <legend>Hematology labs</legend>
+      <fieldset>
+        <legend>Hematology labs performed</legend>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.Labs.hematology_performed", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Were hematology labs performed for this study visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.hematology_performed}"
+            attribute='form.hematology_performed'
+            collection='enum.hematology_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.hematology_performed", form, visit, studyEnrollment)'
+            change='clearData(form.hematology_performed==="Yes", [],["hematology_date_as_same_as_visit"]);'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.Labs.hematology_reason_not_performed", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Hematology labs: reason not performed</label>
+          <cqs-select
+            ng-class="{'has-error':errors.hematology_reason_not_performed}"
+            attribute='form.hematology_reason_not_performed'
+            collection='enum.hematology_reason_not_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.hematology_reason_not_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.Labs.hematology_reason_not_performed_specify", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Hematology labs: reason not performed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.hematology_reason_not_performed_specify}"
+            attribute='form.hematology_reason_not_performed_specify'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.hematology_reason_not_performed_specify", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.hematology_performed === "Yes"'>
+          <br />
+          <label class='h4-label'>Date of blood draw for hematology labs</label>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.hematology_performed === "Yes"'>
+          <h4 class='col-xs-4 no-left-padding'>Same as date of clinical visit</h4>
+          <cqs-check 
+            attribute='form.hematology_date_as_same_as_visit'
+            ng-class="{'has-error':errors.hematology_date_as_same_as_visit}"
+            isdisabled='disabled'
+            ng-click='setDate("hematology_date_performed", form.hematology_date_as_same_as_visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.hematology_performed === "Yes"'>
+          <cqs-input 
+            attribute='form.hematology_date_performed'
+            label='labelService("StudyEnrollments.Visits.Labs.hematology_date_performed")'
+            ng-class="{'has-error':errors.hematology_date_performed}"
+            isdisabled='disabled || form.hematology_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.Labs.hematology_date_performed", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.Labs", "hematology_date_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+      </fieldset>
+      
+      <fieldset ng-show='form.hematology_performed === "Yes" && form.hematology_date_performed'>
+        <legend>Hematology lab findings</legend>
+        <div class='row'><h4 class='col-xs-12'>Please complete the table for each hematology lab</h4></div>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.hematology_WBC", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-5'>WBC</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.hematology_WBC'
+              ng-class="{'has-error':errors.hematology_WBC}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.hematology_WBC", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.hematology_WBC")'
+              warnings='rangeWarnings("wbc", form.hematology_WBC, form.hematology_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>10^3/uL</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("wbc", form.hematology_WBC, form.hematology_date_performed)'
+          obj="form.hematology_WBC_details"
+          errors="errors.hematology_WBC_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('wbc', form.hematology_WBC, form.hematology_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.hematology_WBC_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.hematology_WBC_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.hematology_RBC", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-5'>RBC</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.hematology_RBC'
+              ng-class="{'has-error':errors.hematology_RBC}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.hematology_RBC", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.hematology_RBC")'
+              warnings='rangeWarnings("rbc", form.hematology_RBC, form.hematology_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>10^6/uL</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("rbc", form.hematology_RBC, form.hematology_date_performed)'
+          obj="form.hematology_RBC_details"
+          errors="errors.hematology_RBC_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('rbc', form.hematology_RBC, form.hematology_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.hematology_RBC_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.hematology_RBC_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.hematology_hemoglobin", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-5'>Hemoglobin</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.hematology_hemoglobin'
+              ng-class="{'has-error':errors.hematology_hemoglobin}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.hematology_hemoglobin", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.hematology_hemoglobin")'
+              warnings='rangeWarnings("hemoglobin", form.hematology_hemoglobin, form.hematology_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>g/dL</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("hemoglobin", form.hematology_hemoglobin, form.hematology_date_performed)'
+          obj="form.hematology_hemoglobin_details"
+          errors="errors.hematology_hemoglobin_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('hemoglobin', form.hematology_hemoglobin, form.hematology_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.hematology_hemoglobin_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.hematology_hemoglobin_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.hematology_hematocrit", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-5'>Hematocrit</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.hematology_hematocrit'
+              ng-class="{'has-error':errors.hematology_hematocrit}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.hematology_hematocrit", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.hematology_hematocrit")'
+              warnings='rangeWarnings("hematocrit", form.hematology_hematocrit, form.hematology_date_performed)'>
+            </cqs-input>
+            </cqs-input>
+          </p>
+          <p>%</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("hematocrit", form.hematology_hematocrit, form.hematology_date_performed)'
+          obj="form.hematology_hematocrit_details"
+          errors="errors.hematology_hematocrit_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('hematocrit', form.hematology_hematocrit, form.hematology_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.hematology_hematocrit_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.hematology_hematocrit_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.hematology_platelet", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-5'>Platelet count</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.hematology_platelet'
+              ng-class="{'has-error':errors.hematology_platelet}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.hematology_platelet", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.hematology_platelet")'
+              warnings='rangeWarnings("plateletCount", form.hematology_platelet, form.hematology_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>10^3/uL</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("plateletCount", form.hematology_platelet, form.hematology_date_performed)'
+          obj="form.hematology_platelet_details"
+          errors="errors.hematology_platelet_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('plateletCount', form.hematology_platelet, form.hematology_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.hematology_platelet_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.hematology_platelet_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.hematology_neutrophil", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-5'>WBC (differential): Neutrophil</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.hematology_neutrophil'
+              ng-class="{'has-error':errors.hematology_neutrophil}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.hematology_neutrophil", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.hematology_neutrophil")'
+              warnings='rangeWarnings("wbcNeutrophil", form.hematology_neutrophil, form.hematology_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>%</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("wbcNeutrophil", form.hematology_neutrophil, form.hematology_date_performed)'
+          obj="form.hematology_neutrophil_details"
+          errors="errors.hematology_neutrophil_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('wbcNeutrophil', form.hematology_neutrophil, form.hematology_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.hematology_neutrophil_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.hematology_neutrophil_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.hematology_eosinophil", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-5'>WBC (differential): Eosinophil</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.hematology_eosinophil'
+              ng-class="{'has-error':errors.hematology_eosinophil}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.hematology_eosinophil", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.hematology_eosinophil")'
+              warnings='rangeWarnings("wbcEosinophil", form.hematology_eosinophil, form.hematology_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>%</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("wbcEosinophil", form.hematology_eosinophil, form.hematology_date_performed)'
+          obj="form.hematology_eosinophil_details"
+          errors="errors.hematology_eosinophil_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('wbcEosinophil', form.hematology_eosinophil, form.hematology_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.hematology_eosinophil_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.hematology_eosinophil_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.hematology_basophil", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-5'>WBC (differential): Basophil</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.hematology_basophil'
+              ng-class="{'has-error':errors.hematology_basophil}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.hematology_basophil", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.hematology_basophil")'
+              warnings='rangeWarnings("wbcBasophil", form.hematology_basophil, form.hematology_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>%</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("wbcBasophil", form.hematology_basophil, form.hematology_date_performed)'
+          obj="form.hematology_basophil_details"
+          errors="errors.hematology_basophil_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('wbcBasophil', form.hematology_basophil, form.hematology_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.hematology_basophil_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.hematology_basophil_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.hematology_lymphocyte", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-5'>WBC (differential): Lymphocyte</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.hematology_lymphocyte'
+              ng-class="{'has-error':errors.hematology_lymphocyte}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.hematology_lymphocyte", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.hematology_lymphocyte")'
+              warnings='rangeWarnings("wbcLymphocyte", form.hematology_lymphocyte, form.hematology_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>%</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("wbcLymphocyte", form.hematology_lymphocyte, form.hematology_date_performed)'
+          obj="form.hematology_lymphocyte_details"
+          errors="errors.hematology_lymphocyte_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('wbcLymphocyte', form.hematology_lymphocyte, form.hematology_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.hematology_lymphocyte_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.hematology_lymphocyte_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.hematology_monocyte", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-5'>WBC (differential): Monocyte</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.hematology_monocyte'
+              ng-class="{'has-error':errors.hematology_monocyte}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.hematology_monocyte", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.hematology_monocyte")'
+              warnings='rangeWarnings("wbcMonocyte", form.hematology_monocyte, form.hematology_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>%</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("wbcMonocyte", form.hematology_monocyte, form.hematology_date_performed)'
+          obj="form.hematology_monocyte_details"
+          errors="errors.hematology_monocyte_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('wbcMonocyte', form.hematology_monocyte, form.hematology_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.hematology_monocyte_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.hematology_monocyte_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.hematology_blasts", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-5'>WBC (differential): Blasts</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.hematology_blasts'
+              ng-class="{'has-error':errors.hematology_blasts}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.hematology_blasts", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.hematology_blasts")'
+              warnings='rangeWarnings("wbcBlasts", form.hematology_blasts, form.hematology_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>%</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("wbcBlasts", form.hematology_blasts, form.hematology_date_performed)'
+          obj="form.hematology_blasts_details"
+          errors="errors.hematology_blasts_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('wbcBlasts', form.hematology_blasts, form.hematology_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.hematology_blasts_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.hematology_blasts_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.hematology_promyelocytes", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-5'>WBC (differential): Promyelocytes</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.hematology_promyelocytes'
+              ng-class="{'has-error':errors.hematology_promyelocytes}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.hematology_promyelocytes", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.hematology_promyelocytes")'
+              warnings='rangeWarnings("wbcPromyelocytes", form.hematology_promyelocytes, form.hematology_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>%</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("wbcPromyelocytes", form.hematology_promyelocytes, form.hematology_date_performed)'
+          obj="form.hematology_promyelocytes_details"
+          errors="errors.hematology_promyelocytes_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('wbcPromyelocytes', form.hematology_promyelocytes, form.hematology_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.hematology_promyelocytes_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.hematology_promyelocytes_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.hematology_myelocytes", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-5'>WBC (differential): Myelocytes</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.hematology_myelocytes'
+              ng-class="{'has-error':errors.hematology_myelocytes}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.hematology_myelocytes", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.hematology_myelocytes")'
+              warnings='rangeWarnings("wbcMyelocytes", form.hematology_myelocytes, form.hematology_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>%</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("wbcMyelocytes", form.hematology_myelocytes, form.hematology_date_performed)'
+          obj="form.hematology_myelocytes_details"
+          errors="errors.hematology_myelocytes_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('wbcMyelocytes', form.hematology_myelocytes, form.hematology_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.hematology_myelocytes_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.hematology_myelocytes_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.hematology_metamyelocytes", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-5'>WBC (differential): Metamyelocytes</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.hematology_metamyelocytes'
+              ng-class="{'has-error':errors.hematology_metamyelocytes}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.hematology_metamyelocytes", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.hematology_metamyelocytes")'
+              warnings='rangeWarnings("wbcMetamyelocytes", form.hematology_metamyelocytes, form.hematology_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>%</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("wbcMetamyelocytes", form.hematology_metamyelocytes, form.hematology_date_performed)'
+          obj="form.hematology_metamyelocytes_details"
+          errors="errors.hematology_metamyelocytes_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('wbcMetamyelocytes', form.hematology_metamyelocytes, form.hematology_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.hematology_metamyelocytes_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.hematology_metamyelocytes_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.hematology_bands", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-5'>WBC (differential): Bands</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.hematology_bands'
+              ng-class="{'has-error':errors.hematology_bands}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.hematology_bands", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.hematology_bands")'
+              warnings='rangeWarnings("wbcBands", form.hematology_bands, form.hematology_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>%</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("wbcBands", form.hematology_bands, form.hematology_date_performed)'
+          obj="form.hematology_bands_details"
+          errors="errors.hematology_bands_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('wbcBands', form.hematology_bands, form.hematology_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.hematology_bands_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.hematology_bands_details)">
+        </range-details>
+      </fieldset>
+    </fieldset>
+    <!--//end----2 -->
+
+    <fieldset ng-show='required("StudyEnrollments.Visits.Labs.coagulation_performed", form, visit, studyEnrollment)'>
+      <legend>Coagulation labs</legend>
+      <fieldset>
+        <legend>Coagulation labs performed</legend>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.Labs.coagulation_performed", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Were blood coagulation labs performed for this study visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.coagulation_performed}"
+            attribute='form.coagulation_performed'
+            collection='enum.coagulation_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.coagulation_performed", form, visit, studyEnrollment)'
+            change='clearData(form.coagulation_performed==="Yes", [],["coagulation_date_as_same_as_visit"]);'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.Labs.coagulation_reason_not_performed", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Coagulation labs: reason not performed</label>
+          <cqs-select
+            ng-class="{'has-error':errors.coagulation_reason_not_performed}"
+            attribute='form.coagulation_reason_not_performed'
+            collection='enum.coagulation_reason_not_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.coagulation_reason_not_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.Labs.coagulation_reason_not_performed_specify", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Coagulation labs: reason not performed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.coagulation_reason_not_performed_specify}"
+            attribute='form.coagulation_reason_not_performed_specify'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.coagulation_reason_not_performed_specify", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.coagulation_performed === "Yes"'>
+          <br />
+          <label class='h4-label'>Date of blood draw for coagulation labs</label>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.coagulation_performed === "Yes"'>
+          <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+          <cqs-check attribute='form.coagulation_date_as_same_as_visit'
+            ng-class="{'has-error':errors.coagulation_date_as_same_as_visit}"
+            isdisabled='disabled'
+            ng-click='setDate("coagulation_date_performed", form.coagulation_date_as_same_as_visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.coagulation_performed === "Yes"'>
+          <cqs-input 
+            attribute='form.coagulation_date_performed'
+            label='labelService("StudyEnrollments.Visits.Labs.coagulation_date_performed")'
+            ng-class="{'has-error':errors.coagulation_date_performed}"
+            isdisabled='disabled || form.coagulation_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.Labs.coagulation_date_performed", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.Labs", "coagulation_date_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+      </fieldset>
+      <fieldset ng-show='form.coagulation_performed === "Yes" && form.coagulation_date_performed'>
+        <legend>Coagulation lab findings</legend>
+        <div class='row'><h4 class='col-xs-12'>Please complete the table for each coagulation lab</h4></div>
+
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.coagulation_INR", form, visit, studyEnrollment)'>
+          <br />
+          <h4 class='col-xs-2'>INR</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.coagulation_INR'
+              ng-class="{'has-error':errors.coagulation_INR}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.coagulation_INR", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.coagulation_INR")'
+              warnings='rangeWarnings("inr", form.coagulation_INR, form.coagulation_date_performed)'>
+            </cqs-input>
+          </p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("inr", form.coagulation_INR, form.coagulation_date_performed)'
+          obj="form.coagulation_INR_details"
+          errors="errors.coagulation_INR_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('inr', form.coagulation_INR, form.coagulation_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.coagulation_INR_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.coagulation_INR_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.coagulation_aPTT", form, visit, studyEnrollment)'>
+          <br />
+          <h4 class='col-xs-2'>aPTT</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.coagulation_aPTT'
+              ng-class="{'has-error':errors.coagulation_aPTT}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.coagulation_aPTT", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.coagulation_aPTT")'
+              warnings='rangeWarnings("aptt", form.coagulation_aPTT, form.coagulation_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>seconds</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("aptt", form.coagulation_aPTT, form.coagulation_date_performed)'
+          obj="form.coagulation_aPTT_details"
+          errors="errors.coagulation_aPTT_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('aptt', form.coagulation_aPTT, form.coagulation_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.coagulation_aPTT_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.coagulation_aPTT_details)">
+        </range-details>
+
+      </fieldset>
+    </fieldset>
+    <!--//end----3 -->
+
+    <fieldset>
+      <legend>Blood chemistry labs</legend>
+      <fieldset>
+        <legend>Blood chemistry labs performed</legend>
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.Labs.chemistry_performed", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Were blood chemistry labs performed for this study visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.chemistry_performed}"
+            attribute='form.chemistry_performed'
+            collection='enum.chemistry_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.chemistry_performed", form, visit, studyEnrollment)'
+            change='clearData(form.chemistry_performed==="Yes", [],["chemistry_date_as_same_as_visit"]);'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.Labs.chemistry_reason_not_performed", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Blood chemistry labs: reason not performed</label>
+          <cqs-select
+            ng-class="{'has-error':errors.chemistry_reason_not_performed}"
+            attribute='form.chemistry_reason_not_performed'
+            collection='enum.chemistry_reason_not_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.chemistry_reason_not_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.Labs.chemistry_reason_not_performed_specify", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Blood chemistry labs: reason not performed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.chemistry_reason_not_performed_specify}"
+            attribute='form.chemistry_reason_not_performed_specify'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.chemistry_reason_not_performed_specify", form, visit, studyEnrollment)'
+            rows="2"
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.chemistry_performed === "Yes"'>
+          <br />
+          <label class='h4-label'>Date of blood draw for blood chemistry labs</label>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.chemistry_performed === "Yes"'>
+          <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+            <cqs-check 
+              attribute='form.chemistry_date_as_same_as_visit'
+              ng-class="{'has-error':errors.chemistry_date_as_same_as_visit}"
+              isdisabled='disabled'
+              ng-click='setDate("chemistry_date_performed", form.chemistry_date_as_same_as_visit)'
+              draftstatus='form.draftStatus'>
+            </cqs-check>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.chemistry_performed === "Yes"'>
+          <cqs-input 
+            attribute='form.chemistry_date_performed'
+            label='labelService("StudyEnrollments.Visits.Labs.chemistry_date_performed")'
+            ng-class="{'has-error':errors.chemistry_date_performed}"
+            isdisabled='disabled || form.chemistry_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.Labs.chemistry_date_performed", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.Labs", "chemistry_date_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+      </fieldset>
+      <fieldset ng-show='form.chemistry_performed === "Yes" && form.chemistry_date_performed'>
+        <legend>Blood chemistry findings</legend>
+        <div class="row"><h4 class='col-xs-12'>Please complete the table for each blood chemistry lab</h4></div>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_potassium", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Potassium</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_potassium'
+              ng-class="{'has-error':errors.chemistry_potassium}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_potassium", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_potassium")'
+              warnings='rangeWarnings("potassium", form.chemistry_potassium, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>mmol/L</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("potassium", form.chemistry_potassium, form.chemistry_date_performed)'
+          obj="form.chemistry_potassium_details"
+          errors="errors.chemistry_potassium_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('potassium', form.chemistry_potassium, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_potassium_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_potassium_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_serum", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Serum creatinine</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_serum'
+              ng-class="{'has-error':errors.chemistry_serum}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_serum", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_serum")'
+              warnings='rangeWarnings("serumCreatinine", form.chemistry_serum, form.chemistry_date_performed)'>
+            </cqsinput>
+          </p>
+          <p>mg/dL</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("serumCreatinine", form.chemistry_serum, form.chemistry_date_performed)'
+          obj="form.chemistry_serum_details"
+          errors="errors.chemistry_serum_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('serumCreatinine', form.chemistry_serum, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_serum_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_serum_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_calcium", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Calcium</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_calcium'
+              ng-class="{'has-error':errors.chemistry_calcium}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_calcium", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_calcium")'
+              warnings='rangeWarnings("calcium", form.chemistry_calcium, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>mg/dL</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("calcium", form.chemistry_calcium, form.chemistry_date_performed)'
+          obj="form.chemistry_calcium_details"
+          errors="errors.chemistry_calcium_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('calcium', form.chemistry_calcium, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_calcium_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_calcium_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_bilirubin", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Total bilirubin</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_bilirubin'
+              ng-class="{'has-error':errors.chemistry_bilirubin}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_bilirubin", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_bilirubin")'
+              warnings='rangeWarnings("totalBilirubin", form.chemistry_bilirubin, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>mg/dL</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("totalBilirubin", form.chemistry_bilirubin, form.chemistry_date_performed)'
+          obj="form.chemistry_bilirubin_details"
+          errors="errors.chemistry_bilirubin_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('totalBilirubin', form.chemistry_bilirubin, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_bilirubin_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_bilirubin_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_protein", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Total protein</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_protein'
+              ng-class="{'has-error':errors.chemistry_protein}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_protein", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_protein")'
+              warnings='rangeWarnings("totalProtein", form.chemistry_protein, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>g/dL</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("totalProtein", form.chemistry_protein, form.chemistry_date_performed)'
+          obj="form.chemistry_protein_details"
+          errors="errors.chemistry_protein_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('totalProtein', form.chemistry_protein, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_protein_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_protein_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_albumin", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Albumin</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_albumin'
+              ng-class="{'has-error':errors.chemistry_albumin}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_albumin", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_albumin")'
+              warnings='rangeWarnings("albumin", form.chemistry_albumin, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>g/dL</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("albumin", form.chemistry_albumin, form.chemistry_date_performed)'
+          obj="form.chemistry_albumin_details"
+          errors="errors.chemistry_albumin_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('albumin', form.chemistry_albumin, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_albumin_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_albumin_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_ALT", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>ALT (SGOT)</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_ALT'
+              ng-class="{'has-error':errors.chemistry_ALT}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_ALT", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_ALT")'
+              warnings='rangeWarnings("alt", form.chemistry_ALT, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>U/L</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("alt", form.chemistry_ALT, form.chemistry_date_performed)'
+          obj="form.chemistry_ALT_details"
+          errors="errors.chemistry_ALT_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('alt', form.chemistry_ALT, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_ALT_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_ALT_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_AST", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>AST (SGPT)</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_AST'
+              ng-class="{'has-error':errors.chemistry_AST}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_AST", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_AST")'
+              warnings='rangeWarnings("ast", form.chemistry_AST, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>U/L</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("ast", form.chemistry_AST, form.chemistry_date_performed)'
+          obj="form.chemistry_AST_details"
+          errors="errors.chemistry_AST_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('ast', form.chemistry_AST, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_AST_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_AST_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_alkaline", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Alkaline phosphatase</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_alkaline'
+              ng-class="{'has-error':errors.chemistry_alkaline}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_alkaline", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_alkaline")'
+              warnings='rangeWarnings("alkalinePhosphatase", form.chemistry_alkaline, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>U/L</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("alkalinePhosphatase", form.chemistry_alkaline, form.chemistry_date_performed)'
+          obj="form.chemistry_alkaline_details"
+          errors="errors.chemistry_alkaline_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('alkalinePhosphatase', form.chemistry_alkaline, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_alkaline_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_alkaline_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_LDH", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Lactate dehydrogenase (LDH)</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_LDH'
+              ng-class="{'has-error':errors.chemistry_LDH}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_LDH", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_LDH")'
+              warnings='rangeWarnings("lactateDehydrogenase", form.chemistry_LDH, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>IU/L</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("lactateDehydrogenase", form.chemistry_LDH, form.chemistry_date_performed)'
+          obj="form.chemistry_LDH_details"
+          errors="errors.chemistry_LDH_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('lactateDehydrogenase', form.chemistry_LDH, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_LDH_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_LDH_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_glucose", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Glucose</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_glucose'
+              ng-class="{'has-error':errors.chemistry_glucose}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_glucose", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_glucose")'
+              warnings='rangeWarnings("glucose", form.chemistry_glucose, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>mg/dL</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("glucose", form.chemistry_glucose, form.chemistry_date_performed)'
+          obj="form.chemistry_glucose_details"
+          errors="errors.chemistry_glucose_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('glucose', form.chemistry_glucose, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_glucose_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_glucose_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_BUN", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Blood urea nitrogen (BUN)</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_BUN'
+              ng-class="{'has-error':errors.chemistry_BUN}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_BUN", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_BUN")'
+              warnings='rangeWarnings("bloodUreaNitrogen", form.chemistry_BUN, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>mg/dL</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("bloodUreaNitrogen", form.chemistry_BUN, form.chemistry_date_performed)'
+          obj="form.chemistry_BUN_details"
+          errors="errors.chemistry_BUN_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('bloodUreaNitrogen', form.chemistry_BUN, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_BUN_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_BUN_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_sodium", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Sodium</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_sodium'
+              ng-class="{'has-error':errors.chemistry_sodium}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_sodium", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_sodium")'
+              warnings='rangeWarnings("sodium", form.chemistry_sodium, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>mmol/L</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("sodium", form.chemistry_sodium, form.chemistry_date_performed)'
+          obj="form.chemistry_sodium_details"
+          errors="errors.chemistry_sodium_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('sodium', form.chemistry_sodium, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_sodium_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_sodium_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_chloride", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Chloride</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_chloride'
+              ng-class="{'has-error':errors.chemistry_chloride}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_chloride", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_chloride")'
+              warnings='rangeWarnings("chloride", form.chemistry_chloride, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>mmol/L</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("chloride", form.chemistry_chloride, form.chemistry_date_performed)'
+          obj="form.chemistry_chloride_details"
+          errors="errors.chemistry_chloride_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('chloride', form.chemistry_chloride, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_chloride_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_chloride_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_CO2", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Carbon dioxide (CO2)</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_CO2'
+              ng-class="{'has-error':errors.chemistry_CO2}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_CO2", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_CO2")'
+              warnings='rangeWarnings("carbonDioxide", form.chemistry_CO2, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>mmol/L</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("carbonDioxide", form.chemistry_CO2, form.chemistry_date_performed)'
+          obj="form.chemistry_CO2_details"
+          errors="errors.chemistry_CO2_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('carbonDioxide', form.chemistry_CO2, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_CO2_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_CO2_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_magnesium", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Magnesium</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_magnesium'
+              ng-class="{'has-error':errors.chemistry_magnesium}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_magnesium", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_magnesium")'
+              warnings='rangeWarnings("magnesium", form.chemistry_magnesium, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>mg/dL</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("magnesium", form.chemistry_magnesium, form.chemistry_date_performed)'
+          obj="form.chemistry_magnesium_details"
+          errors="errors.chemistry_magnesium_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('magnesium', form.chemistry_magnesium, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_magnesium_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_magnesium_details)">
+        </range-details>
+
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_phosphorus", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Phosphorus</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_phosphorus'
+              ng-class="{'has-error':errors.chemistry_phosphorus}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_phosphorus", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_phosphorus")'
+              warnings='rangeWarnings("phosphorus", form.chemistry_phosphorus, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>mg/dL</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("phosphorus", form.chemistry_phosphorus, form.chemistry_date_performed)'
+          obj="form.chemistry_phosphorus_details"
+          errors="errors.chemistry_phosphorus_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('phosphorus', form.chemistry_phosphorus, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_phosphorus_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_phosphorus_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_uric", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Uric acid</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_uric'
+              ng-class="{'has-error':errors.chemistry_uric}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_uric", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_uric")'
+              warnings='rangeWarnings("uricAcid", form.chemistry_uric, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>mg/dL</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("uricAcid", form.chemistry_uric, form.chemistry_date_performed)'
+          obj="form.chemistry_uric_details"
+          errors="errors.chemistry_uric_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('uricAcid', form.chemistry_uric, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_uric_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_uric_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_amylase", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Amylase</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_amylase'
+              ng-class="{'has-error':errors.chemistry_amylase}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_amylase", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_amylase")'
+              warnings='rangeWarnings("amylase", form.chemistry_amylase, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>IU/L</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("amylase", form.chemistry_amylase, form.chemistry_date_performed)'
+          obj="form.chemistry_amylase_details"
+          errors="errors.chemistry_amylase_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('amylase', form.chemistry_amylase, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_amylase_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_amylase_details)">
+        </range-details>
+        <div class='row indent-1 rangeDetail' ng-show='required("StudyEnrollments.Visits.Labs.chemistry_lipase", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4'>Lipase</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.chemistry_lipase'
+              ng-class="{'has-error':errors.chemistry_lipase}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.chemistry_lipase", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.chemistry_lipase")'
+              warnings='rangeWarnings("lipase", form.chemistry_lipase, form.chemistry_date_performed)'>
+            </cqs-input>
+          </p>
+          <p>U/L</p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("lipase", form.chemistry_lipase, form.chemistry_date_performed)'
+          obj="form.chemistry_lipase_details"
+          errors="errors.chemistry_lipase_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('lipase', form.chemistry_lipase, form.chemistry_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.chemistry_lipase_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.chemistry_lipase_details)">
+        </range-details>
+      </fieldset>
+    </fieldset>
+    <!--//end----4 -->
+
+    <fieldset ng-show='required("StudyEnrollments.Visits.Labs.HbA1c_performed", form, visit, studyEnrollment)'>
+      <legend>HbA1c</legend>
+      <fieldset>
+        <legend>HbA1c performed</legend>
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.Labs.HbA1c_performed", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Was HbA1c testing performed for this study visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.HbA1c_performed}"
+            attribute='form.HbA1c_performed'
+            collection='enum.HbA1c_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.HbA1c_performed", form, visit, studyEnrollment)'
+            change='clearData(form.HbA1c_performed==="Yes", [],["HbA1c_date_as_same_as_visit"]);'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.Labs.HbA1c_reason_not_performed", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>HbA1c: reason not performed</label>
+          <cqs-select
+            ng-class="{'has-error':errors.HbA1c_reason_not_performed}"
+            attribute='form.HbA1c_reason_not_performed'
+            collection='enum.HbA1c_reason_not_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.HbA1c_reason_not_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.Labs.HbA1c_reason_not_performed_specify", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>HbA1c: reason not performed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.HbA1c_reason_not_performed_specify}"
+            attribute='form.HbA1c_reason_not_performed_specify'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.HbA1c_reason_not_performed_specify", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.HbA1c_performed === "Yes"'>
+          <br />
+          <label class='h4-label'>Date of blood draw for HbA1c</label>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.HbA1c_performed === "Yes"'>
+          <h4 class='col-xs-4 no-left-padding'>Same as date of clinical visit</h4>
+          <cqs-check 
+            attribute='form.HbA1c_date_as_same_as_visit'
+            ng-class="{'has-error':errors.HbA1c_date_as_same_as_visit}"
+            isdisabled='disabled'
+            ng-click='setDate("HbA1c_date_performed", form.HbA1c_date_as_same_as_visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.HbA1c_performed === "Yes"'>
+          <cqs-input 
+            attribute='form.HbA1c_date_performed'
+            label='labelService("StudyEnrollments.Visits.Labs.HbA1c_date_performed")'
+            ng-class="{'has-error':errors.HbA1c_date_performed}"
+            isdisabled='disabled || form.HbA1c_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.Labs.HbA1c_date_performed", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.Labs", "HbA1c_date_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+      </fieldset>
+      <fieldset ng-show='form.HbA1c_performed === "Yes" && form.HbA1c_date_performed'>
+        <legend>HbA1c findings</legend>
+        <div class='row' ng-show='required("StudyEnrollments.Visits.Labs.HbA1c_DCCT", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-2'>HbA1c (DCCT %)</h4>
+          <p class="col-xs-1">
+            <cqs-input attribute='form.HbA1c_DCCT'
+              ng-class="{'has-error':errors.HbA1c_DCCT}"
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.Labs.HbA1c_DCCT", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'
+              label='labelService("StudyEnrollments.Visits.Labs.HbA1c_DCCT")'
+              warnings='rangeWarnings("hba1c", form.HbA1c_DCCT, form.HbA1c_date_performed)'>
+            </cqs-input>
+          </p>
+          <p></p>
+        </div>
+        <range-details 
+          ng-show='outOfRange("hba1c", form.HbA1c_DCCT, form.HbA1c_date_performed)'
+          obj="form.HbA1c_DCCT_details"
+          errors="errors.HbA1c_DCCT_details"
+          draftstatus='form.draftStatus'
+          requirement1="outOfRange('hba1c', form.HbA1c_DCCT, form.HbA1c_date_performed)"
+          requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.HbA1c_DCCT_details)"
+          requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.HbA1c_DCCT_details)">
+        </range-details>
+
+      </fieldset>
+    </fieldset>
+    <!--//end----5 -->
+
+    <fieldset ng-show='required("StudyEnrollments.Visits.Labs.pregnancy_performed", form, visit, studyEnrollment)'>
+      <legend>Pregnancy test</legend>
+      <fieldset>
+        <legend>Pregnancy test performed</legend>
+        
+        <div class='form-group'>
+          <label class='h4-label'>Was serum pregnancy test performed for this study visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.pregnancy_performed}"
+            attribute='form.pregnancy_performed'
+            collection='enum.pregnancy_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.pregnancy_performed", form, visit, studyEnrollment)'
+            change='clearData(form.pregnancy_performed==="Yes", [],["pregnancy_date_as_same_as_visit"]);'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.Labs.pregnancy_reason_not_performed", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Pregnancy test: reason not performed</label>
+          <cqs-select
+            ng-class="{'has-error':errors.pregnancy_reason_not_performed}"
+            attribute='form.pregnancy_reason_not_performed'
+            collection='enum.pregnancy_reason_not_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.pregnancy_reason_not_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.Labs.pregnancy_reason_not_performed_specify", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Pregnancy test: reason not performed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.pregnancy_reason_not_performed_specify}"
+            attribute='form.pregnancy_reason_not_performed_specify'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.pregnancy_reason_not_performed_specify", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.Labs.pregnancy_date_performed", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Date of blood draw for pregnancy test</label>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.Labs.pregnancy_date_performed", form, visit, studyEnrollment)'>
+          <h4 class='col-xs-4 no-left-padding'>Same as date of clinical visit</h4>
+          <cqs-check 
+            attribute='form.pregnancy_date_as_same_as_visit'
+            ng-class="{'has-error':errors.pregnancy_date_as_same_as_visit}"
+            isdisabled='disabled'
+            ng-click='setDate("pregnancy_date_performed", form.pregnancy_date_as_same_as_visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+        </div>
+        
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.Labs.pregnancy_date_performed", form, visit, studyEnrollment)'>
+          <cqs-input 
+            attribute='form.pregnancy_date_performed'
+            label='labelService("StudyEnrollments.Visits.Labs.pregnancy_date_performed")'
+            ng-class="{'has-error':errors.pregnancy_date_performed}"
+            isdisabled='disabled || form.pregnancy_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.Labs.pregnancy_date_performed", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.Labs", "pregnancy_date_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+      </fieldset>
+      <fieldset ng-show='required("StudyEnrollments.Visits.Labs.pregnancy_result", form, visit, studyEnrollment)'>
+        <legend>Pregnancy test findings</legend>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.Labs.pregnancy_result", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Pregnancy test results</label>
+          <cqs-select
+            ng-class="{'has-error':errors.pregnancy_result}"
+            attribute='form.pregnancy_result'
+            collection='enum.pregnancy_result'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.Labs.pregnancy_result", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+      </fieldset>
+    </fieldset>
+    <!--//end----6 -->
+
+    <div class='form-group'>
+      <label class='h4-label'>Record status:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.draftStatus}"
+        attribute='form.draftStatus'
+        collection='["Complete", "Incomplete"]'
+        isdisabled="disabled"
+        isrequired="true">
+      </cqs-select>
+    </div>
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+
+    <a ng-href="#/studyenrollments/{{studyEnrollment.id}}?tab=visitForms&visit={{ visit.id }}" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

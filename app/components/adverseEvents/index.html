@@ -1,0 +1,69 @@
+<div ng-if='message'>{{message}}</div>
+<h2>Adverse events for study identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id> </h2>
+
+<h3>Serious Adverse Events</h3>
+<table ng-table='seriousTableParams' class='table table-bordered table-striped'>
+    <tr ng-repeat='event in $data' ng-click="rowClick('/studyenrollments/'+studyEnrollment.id+'/adverseevents/'+event.id)">
+      <td data-title="'Event category'" data-sortable="'event_category'">
+        {{event.event_category}}</td>
+      <td data-title="'Event type '" data-sortable="'event_type'">
+        {{event.event_type}}</td>
+      <td data-title="'Ongoing?'" data-sortable="'ongoing'">
+        {{event.ongoing}}</td>
+      <td data-title="'Event start date '" data-sortable="'start_date'">
+        {{event.start_date}}</td>
+      <td data-title="'Event end date '" data-sortable="'end_date'">
+        {{event.end_date}}</td>
+      <td data-title="'Grade (CTCAE 4.03) '" data-sortable="'grade'">
+        {{event.grade}}</td>
+      <td data-title="'attr. disease '" data-sortable="'disease_attribution'">
+        {{event.disease_attribution}}</td>
+      <td data-title="'attr. TGR-1202 '" data-sortable="'tgr1202_attribution'">
+        {{event.tgr1202_attribution}}</td>
+      <td data-title="'attr. ruxolitinib '" data-sortable="'ruxolitinib_attribution'">
+        {{event.ruxolitinib_attribution}}</td>
+      <td data-title="'attr. procedure '" data-sortable="'procedure_attribution'">
+        {{event.procedure_attribution}}</td>
+      <td data-title="'attr. other '" data-sortable="'other_attribution'">
+        {{event.other_attribution}}</td>
+    </tr>
+</table>
+
+<h3>Adverse Events</h3>
+<table ng-table='eventsTableParams' class='table table-bordered table-striped'>
+    <tr ng-repeat='event in $data' ng-click="rowClick('/studyenrollments/'+studyEnrollment.id+'/adverseevents/'+event.id)">
+      <td data-title="'Event category'" data-sortable="'event_category'">
+        {{event.event_category}}</td>
+      <td data-title="'Event type'" data-sortable="'event_type'">
+        {{event.event_type}}</td>
+      <td data-title="'Ongoing?'" data-sortable="'ongoing'">
+        {{event.ongoing}}</td>
+      <td data-title="'Event start date'" data-sortable="'start_date'">
+        {{event.start_date}}</td>
+      <td data-title="'Event end date'" data-sortable="'end_date'">
+        {{event.end_date}}</td>
+      <td data-title="'Grade (CTAE 4.03)'" data-sortable="'grade'">
+        {{event.grade}}</td>
+      <td data-title="'attr. disease'" data-sortable="'disease_attribution'">
+        {{event.disease_attribution}}</td>
+      <td data-title="'attr. TGR-1202'" data-sortable="'tgr1202_attribution'">
+        {{event.tgr1202_attribution}}</td>
+      <td data-title="'attr. ruxolitinib'" data-sortable="'ruxolitinib_attribution'">
+        {{event.ruxolitinib_attribution}}</td>
+      <td data-title="'attr. procedure'" data-sortable="'procedure_attribution'">
+        {{event.procedure_attribution}}</td>
+      <td data-title="'attr. other'" data-sortable="'other_attribution'">
+        {{event.other_attribution}}</td>
+
+      <td>
+        <a ng-hide='!canEdit || isLockedDown()' ng-href="#/studyenrollments/{{ studyEnrollment.id }}/adverseevents/{{ event.id }}/edit" class='btn btn-primary'>Edit</a>
+      </td>
+  </div>
+      <td > <button class='btn table-btn btn-danger' ng-click='deleteEvent(event)' ng-hide='event.is_dlt === "Yes" || isLockedDown(true) || !canDelete'>Delete</button> </td>
+    </tr>
+</table>
+
+<div class='row'>
+  <a ng-href={{'#/studyenrollments/'+studyEnrollment.id+'/adverseevents/new'}} class='btn btn-success' ng-hide='!canAdd || isLockedDown()'>New Event</a>
+  <a ng-href="#/studyenrollments/{{ studyEnrollment.id }}?tab=logForms" class='btn btn-primary'>Back</a>
+</div>

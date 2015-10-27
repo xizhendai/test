@@ -1,0 +1,601 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>Bone marrow</h2>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='form'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && form.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <fieldset>
+      <legend>Details</legend>
+      <div class='row'>
+        <h4 class='col-xs-1'>Visit</h4>
+        <input class='form-control, col-xs-4' ng-model='visit_type' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-3'>Date of clinical visit </h4>
+        <input class='form-control, col-xs-2' ng-model='visit.visit_date' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-1'>Form </h4>
+        <input class='form-control, col-xs-4' ng-disabled='true' value="Bone marrow" />
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Bone marrow core</legend>
+      <fieldset>
+        <legend>Bone marrow core performed</legend>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.BoneMarrow.marrow_collected", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Was a bone marrow core for disease assessment collected for this study visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.marrow_collected}"
+            attribute='form.marrow_collected'
+            collection='enum.marrow_collected'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.BoneMarrow.marrow_collected", form, visit, studyEnrollment)'
+            change='clearData(form.marrow_collected==="Yes", [],["marrow_date_as_same_as_visit"]);'
+            ng-click='setDraft("Complete")'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.BoneMarrow.reason_not_performed", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Bone marrow core: reason not performed</label>
+          <cqs-select
+            ng-class="{'has-error':errors.reason_not_performed}"
+            attribute='form.reason_not_performed'
+            collection='enum.reason_not_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.BoneMarrow.reason_not_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.BoneMarrow.reason_not_performed_specify", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Bone marrow core: reason not performed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.reason_not_performed_specify}"
+            attribute='form.reason_not_performed_specify'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.BoneMarrow.reason_not_performed_specify", form, visit, studyEnrollment)'
+            rows="2"
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+        
+        <div class="row"
+              ng-show='visit.visit_type === "Screening visit" && form.marrow_collected === "No"'>
+          <div class='col-xs-offset-5 redborder heavy-text'>
+            Patient is ineligible if bone marrow core for disease assessment not performed at screening.
+            Please correct and continue with form if this is a data entry error. 
+            Otherwise, please submit this form without further data entry, inform 
+            the trial coordinating group at Vanderbilt, and do not enter further data for this patient.
+          </div>
+        </div>
+        
+        <div class='form-group indent-1' ng-show='form.marrow_collected === "Yes"'>
+          <br />
+          <label class='h4-label'>Bone marrow core: date performed</label>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.marrow_collected === "Yes"'>
+          <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+          <cqs-check 
+            attribute='form.marrow_date_as_same_as_visit'
+            ng-class="{'has-error':errors.marrow_date_as_same_as_visit}"
+            isdisabled='disabled'
+            ng-click='setDate("marrow_date_collected", form.marrow_date_as_same_as_visit)'
+            clearif='form.marrow_collected !== "Yes"'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+          </p>
+        </div>
+        
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.BoneMarrow.marrow_date_collected", form, visit, studyEnrollment)'>
+          <cqs-input 
+            attribute='form.marrow_date_collected'
+            label='labelService("StudyEnrollments.Visits.BoneMarrow.marrow_date_collected")'
+            ng-class="{'has-error':errors.marrow_date_collected}"
+            isdisabled='disabled || form.marrow_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.BoneMarrow.marrow_date_collected", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.BoneMarrow", "marrow_date_collected", form, visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+      </fieldset>
+      <fieldset ng-show='form.marrow_collected === "Yes"'>
+        <legend>Bone marrow core findings</legend>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.BoneMarrow.percent_blasts", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Percent blasts</label>
+          <cqs-input 
+            attribute='form.percent_blasts'
+            ng-class="{'has-error':errors.percent_blasts}"
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.BoneMarrow.percent_blasts", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.BoneMarrow.percent_cellular_area", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Percent cellular area</label>
+          <cqs-input 
+            attribute='form.percent_cellular_area'
+            ng-class="{'has-error':errors.percent_cellular_area}"
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.BoneMarrow.percent_cellular_area", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+   
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.BoneMarrow.fibrosis_grade", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Fibrosis grade</label>
+          <cqs-select
+            ng-class="{'has-error':errors.firbrosis_grade}"
+            attribute='form.fibrosis_grade'
+            collection='enum.fibrosis_grade'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.BoneMarrow.fibrosis_grade", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+      </fieldset>
+    </fieldset>
+    <fieldset ng-show='required("StudyEnrollments.Visits.BoneMarrow.cytogenetics_performed", form, visit, studyEnrollment)'>
+      <legend>Bone marrow cytogenetics</legend>
+      <fieldset>
+        <legend>Bone marrow cytogenetics performed</legend>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.BoneMarrow.cytogenetics_performed", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Was cytogenetics analysis performed on a bone marrow sample for this study visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.cytogenetics_performed}"
+            attribute='form.cytogenetics_performed'
+            collection='enum.cytogenetics_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.BoneMarrow.cytogenetics_performed", form, visit, studyEnrollment)'
+            change='clearData(form.cytogenetics_performed==="Yes", [], ["cytogenetics_date_as_same_as_visit"]);'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.BoneMarrow.cytogenetics_reason_not_performed", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Cytogenetics analysis: reason not performed</label>
+          <cqs-select
+            ng-class="{'has-error':errors.cytogenetics_reason_not_performed}"
+            attribute='form.cytogenetics_reason_not_performed'
+            collection='enum.cytogenetics_reason_not_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.BoneMarrow.cytogenetics_reason_not_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.BoneMarrow.cytogenetics_reason_not_performed_specify", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Cytogenetic analysis: reason not performed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.cytogenetics_reason_not_performed_specify}"
+            attribute='form.cytogenetics_reason_not_performed_specify'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.BoneMarrow.cytogenetics_reason_not_performed_specify", form, visit, studyEnrollment)'
+            rows="2"
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.BoneMarrow.cytogenetics_sample_type", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Cytogenetics analysis: sample type used</label>
+          <div ng-show='visit.visit_type === "Screening visit"'>
+            <cqs-select
+              ng-class="{'has-error':errors.cytogenetics_sample_type}"
+              attribute='form.cytogenetics_sample_type'
+              collection='enum.cytogenetics_sample_type'
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.BoneMarrow.cytogenetics_sample_type", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-select>
+          </div>
+          <div ng-show='visit.visit_type !== "Screening visit"'>
+            <cqs-select
+              ng-class="{'has-error':errors.cytogenetics_sample_type}"
+              attribute='form.cytogenetics_sample_type'
+              collection='["Bone marrow aspirate", "Bone marrow biopsy core (RPMI-incubated)"]'
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.BoneMarrow.cytogenetics_sample_type", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-select>
+          </div>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.cytogenetics_performed === "Yes"'>
+          <br />
+          <label class='h4-label'>Cytogenetic analysis: date of sample collection</label>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.cytogenetics_performed === "Yes"'>
+          <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+          <cqs-check 
+            attribute='form.cytogenetics_date_as_same_as_visit' isdisabled='disabled'
+            ng-class="{'has-error':errors.cytogenetics_date_as_same_as_visit}"
+            ng-click='setDate("cytogenetics_sample_date", form.cytogenetics_date_as_same_as_visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-check>
+        </div>
+
+        <div class='form-group indent-1' ng-show='form.cytogenetics_performed === "Yes"'>
+          <cqs-input 
+            attribute='form.cytogenetics_sample_date'
+            label='labelService("StudyEnrollments.Visits.BoneMarrow.cytogenetics_sample_date")'
+            ng-class="{'has-error':errors.cytogenetics_sample_date}"
+            isdisabled='disabled || form.cytogenetics_date_as_same_as_visit'
+            placeholder="YYYY-MM-DD"
+            isrequired='required("StudyEnrollments.Visits.BoneMarrow.cytogenetics_sample_date", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.BoneMarrow", "cytogenetics_sample_date", form, visit)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+      </fieldset>
+      <fieldset ng-show='form.cytogenetics_performed === "Yes"'>
+        <legend>Bone marrow cytogenetics findings</legend>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.BoneMarrow.karyotyping_performed", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Was classic karyotyping performed?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.karyotyping_performed}"
+            attribute='form.karyotyping_performed'
+            collection='enum.karyotyping_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.BoneMarrow.karyotyping_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+        
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.BoneMarrow.karyotype", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Karyotype:</label>
+          <cqs-input
+            ng-class="{'has-error':errors.karyotype}"
+            attribute='form.karyotype'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.BoneMarrow.karyotype", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class="form-group indent-1"
+              ng-show='required("StudyEnrollments.Visits.BoneMarrow.number_of_cells_in_metaphase", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Number of cells in metaphase / number of cells examined</label>
+          <div>
+            <div class="col-xs-3 no-left-padding" style="float:left;">
+              <cqs-input 
+                size="4"
+                ng-class="{'has-error':errors.number_of_cells_in_metaphase}"
+                attribute='form.number_of_cells_in_metaphase'
+                isdisabled='disabled'
+                isrequired='required("StudyEnrollments.Visits.BoneMarrow.number_of_cells_in_metaphase", form, visit, studyEnrollment)'
+                draftstatus='form.draftStatus'>
+              </cqs-input>
+            </div>  
+            <label style="float:left;"><h4>&nbsp/&nbsp</h4></label>
+            <div class="col-xs-3" style="float:left;">
+              <cqs-input 
+                size="4"
+                ng-class="{'has-error':errors.number_of_cells_examined}"
+                attribute='form.number_of_cells_examined'
+                isdisabled='disabled'
+                isrequired='required("StudyEnrollments.Visits.BoneMarrow.number_of_cells_examined", form, visit, studyEnrollment)'
+                draftstatus='form.draftStatus'>
+              </cqs-input>
+            </div>
+          </div>
+        </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.BoneMarrow.chras_karyotyping_8", form, visit, studyEnrollment)'>
+      <br />
+      <br />
+      <label class='h4-label'>Please select yes or no for each chromosomal abnormality seen on karyotyping: </label>
+      <div class='col-xs-4'>
+        <table class='table table-bordered table-striped radio-table'>
+          <thead>
+            <tr>
+              <th></th>
+              <th class='radio-cell' ng-repeat='value in enum.chras_karyotyping_8'>{{ value }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class='radio-fieldname'>+8</td>
+              <td class='radio-cell' ng-repeat='value in enum.chras_karyotyping_8'>
+                <cqs-radio fieldname='chras_karyotyping_8'
+          ng-class="{'has-error':errors.chras_karyotyping_8}"
+                         attribute='form.chras_karyotyping_8'
+                         value='value'
+                         isdisabled='disabled'
+                         isrequired='required("StudyEnrollments.Visits.BoneMarrow.chras_karyotyping_8", form, visit, studyEnrollment) && !form.chras_karyotyping_8'
+                         draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+
+            <tr>
+              <td class='radio-fieldname'>-7/7q-</td>
+              <td class='radio-cell' ng-repeat='value in enum.chras_karyotyping_77q'>
+                <cqs-radio fieldname='chras_karyotyping_77q'
+          ng-class="{'has-error':errors.chras_karyotyping_77q}"
+                         attribute='form.chras_karyotyping_77q'
+                         value='value'
+                         isdisabled='disabled'
+                         isrequired='required("StudyEnrollments.Visits.BoneMarrow.chras_karyotyping_77q", form, visit, studyEnrollment) && !form.chras_karyotyping_77q'
+                         draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+
+            <tr>
+              <td class='radio-fieldname'>i17q</td>
+              <td class='radio-cell' ng-repeat='value in enum.chras_karyotyping_i17q'>
+                <cqs-radio fieldname='chras_karyotyping_i17q'
+          ng-class="{'has-error':errors.chras_karyotyping_i17q}"
+                         attribute='form.chras_karyotyping_i17q'
+                         value='value'
+                         isdisabled='disabled'
+                         isrequired='required("StudyEnrollments.Visits.BoneMarrow.chras_karyotyping_i17q", form, visit, studyEnrollment) && !form.chras_karyotyping_i17q'
+                         draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+
+            <tr>
+              <td class='radio-fieldname'>-5/5q-</td>
+              <td class='radio-cell' ng-repeat='value in enum.chras_karyotyping_55q'>
+                <cqs-radio fieldname='chras_karyotyping_55q'
+          ng-class="{'has-error':errors.chras_karyotyping_55q}"
+                         attribute='form.chras_karyotyping_55q'
+                         value='value'
+                         isdisabled='disabled'
+                         isrequired='required("StudyEnrollments.Visits.BoneMarrow.chras_karyotyping_55q", form, visit, studyEnrollment) && !form.chras_karyotyping_55q'
+                         draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+
+            <tr>
+              <td class='radio-fieldname'>12p-</td>
+              <td class='radio-cell' ng-repeat='value in enum.chras_karyotyping_12p'>
+                <cqs-radio fieldname='chras_karyotyping_12p'
+          ng-class="{'has-error':errors.chras_karyotyping_12p}"
+                         attribute='form.chras_karyotyping_12p'
+                         value='value'
+                         isdisabled='disabled'
+                         isrequired='required("StudyEnrollments.Visits.BoneMarrow.chras_karyotyping_12p", form, visit, studyEnrollment) && !form.chras_karyotyping_12p'
+                         draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+
+            <tr>
+              <td class='radio-fieldname'>(inv)3</td>
+              <td class='radio-cell' ng-repeat='value in enum.chras_karyotyping_inv3'>
+                <cqs-radio fieldname='chras_karyotyping_inv3'
+          ng-class="{'has-error':errors.chras_karyotyping_inv3}"
+                         attribute='form.chras_karyotyping_inv3'
+                         value='value'
+                         isdisabled='disabled'
+                         isrequired='required("StudyEnrollments.Visits.BoneMarrow.chras_karyotyping_inv3", form, visit, studyEnrollment) && !form.chras_karyotyping_inv3'
+                         draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+
+            <tr>
+              <td class='radio-fieldname'>11q23</td>
+              <td class='radio-cell' ng-repeat='value in enum.chras_karyotyping_11q23'>
+                <cqs-radio fieldname='chras_karyotyping_11q23'
+          ng-class="{'has-error':errors.chras_karyotyping_11q23}"
+                         attribute='form.chras_karyotyping_11q23'
+                         value='value'
+                         isdisabled='disabled'
+                         isrequired='required("StudyEnrollments.Visits.BoneMarrow.chras_karyotyping_11q23", form, visit, studyEnrollment) && !form.chras_karyotyping_11q23'
+                         draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class='form-group' 
+      ng-show='required("StudyEnrollments.Visits.BoneMarrow.fish_performed", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Was FISH performed?</label>
+      <cqs-select
+        ng-class="{'has-error':errors.fish_performed}"
+        attribute='form.fish_performed'
+        collection='enum.fish_performed'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.BoneMarrow.fish_performed", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.BoneMarrow.chras_fish_8", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Please select yes or no for each chromosomal abnormality seen on FISH: </label>
+      <div class='col-xs-4'>
+        <table class='table table-bordered table-striped radio-table'>
+          <thead>
+            <tr>
+              <th></th>
+              <th class='radio-cell' ng-repeat='value in enum.chras_fish_8'>{{ value }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class='radio-fieldname'>+8</td>
+              <td class='radio-cell' ng-repeat='value in enum.chras_fish_8'>
+                <cqs-radio fieldname='chras_fish_8'
+          ng-class="{'has-error':errors.chras_fish_8}"
+                         attribute='form.chras_fish_8'
+                         value='value'
+                         isdisabled='disabled'
+                         isrequired='required("StudyEnrollments.Visits.BoneMarrow.chras_fish_8", form, visit, studyEnrollment) && !form.chras_fish_8'
+                         draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+
+            <tr>
+              <td class='radio-fieldname'>-7/7q-</td>
+              <td class='radio-cell' ng-repeat='value in enum.chras_fish_77q'>
+                <cqs-radio fieldname='chras_fish_77q'
+          ng-class="{'has-error':errors.chras_fish_77q}"
+                         attribute='form.chras_fish_77q'
+                         value='value'
+                         isdisabled='disabled'
+                         isrequired='required("StudyEnrollments.Visits.BoneMarrow.chras_fish_77q", form, visit, studyEnrollment) && !form.chras_fish_77q'
+                         draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+
+            <tr>
+              <td class='radio-fieldname'>i17q</td>
+              <td class='radio-cell' ng-repeat='value in enum.chras_fish_i17q'>
+                <cqs-radio fieldname='chras_fish_i17q'
+          ng-class="{'has-error':errors.chras_fish_i17q}"
+                         attribute='form.chras_fish_i17q'
+                         value='value'
+                         isdisabled='disabled'
+                         isrequired='required("StudyEnrollments.Visits.BoneMarrow.chras_fish_i17q", form, visit, studyEnrollment) && !form.chras_fish_i17q'
+                         draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+
+            <tr>
+              <td class='radio-fieldname'>-5/5q-</td>
+              <td class='radio-cell' ng-repeat='value in enum.chras_fish_55q'>
+                <cqs-radio fieldname='chras_fish_55q'
+          ng-class="{'has-error':errors.chras_fish_55q}"
+                         attribute='form.chras_fish_55q'
+                         value='value'
+                         isdisabled='disabled'
+                         isrequired='required("StudyEnrollments.Visits.BoneMarrow.chras_fish_55q", form, visit, studyEnrollment) && !form.chras_fish_55q'
+                         draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+
+            <tr>
+              <td class='radio-fieldname'>12p-</td>
+              <td class='radio-cell' ng-repeat='value in enum.chras_fish_12p'>
+                <cqs-radio fieldname='chras_fish_12p'
+          ng-class="{'has-error':errors.chras_fish_12p}"
+                         attribute='form.chras_fish_12p'
+                         value='value'
+                         isdisabled='disabled'
+                         isrequired='required("StudyEnrollments.Visits.BoneMarrow.chras_fish_12p", form, visit, studyEnrollment) && !form.chras_fish_12p'
+                         draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+
+            <tr>
+              <td class='radio-fieldname'>(inv)3</td>
+              <td class='radio-cell' ng-repeat='value in enum.chras_fish_inv3'>
+                <cqs-radio fieldname='chras_fish_inv3'
+          ng-class="{'has-error':errors.chras_fish_inv3}"
+                         attribute='form.chras_fish_inv3'
+                         value='value'
+                         isdisabled='disabled'
+                         isrequired='required("StudyEnrollments.Visits.BoneMarrow.chras_fish_inv3", form, visit, studyEnrollment) && !form.chras_fish_inv3'
+                         draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+
+            <tr>
+              <td class='radio-fieldname'>11q23</td>
+              <td class='radio-cell' ng-repeat='value in enum.chras_fish_11q23'>
+                <cqs-radio fieldname='chras_fish_11q23'
+          ng-class="{'has-error':errors.chras_fish_11q23}"
+                         attribute='form.chras_fish_11q23'
+                         value='value'
+                         isdisabled='disabled'
+                         isrequired='required("StudyEnrollments.Visits.BoneMarrow.chras_fish_11q23", form, visit, studyEnrollment) && !form.chras_fish_11q23'
+                         draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+      </fieldset>
+    </fieldset>
+    <div class='form-group'>
+      <label class='col-xs-2'>Record status:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.draftStatus}"
+        attribute='form.draftStatus'
+        collection='["Complete", "Incomplete"]'
+        isdisabled='disabled || (visit.visit_type === "Screening visit" && form.marrow_collected === "No")'
+        isrequired="true">
+      </cqs-select>
+    </div>
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+
+    <a ng-href="#/studyenrollments/{{studyEnrollment.id}}?tab=visitForms&visit={{ visit.id }}" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

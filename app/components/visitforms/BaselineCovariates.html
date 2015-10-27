@@ -1,0 +1,431 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>Baseline Covariates</h2>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='form'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && form.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <fieldset>
+      <legend>Details</legend>
+      <div class='row'>
+        <h4 class='col-xs-1'>Visit</h4>
+        <input class='form-control, col-xs-4' ng-model='visit_type' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-3'>Date of clinical visit </h4>
+        <input class='form-control, col-xs-2' ng-model='visit.visit_date' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-1'>Form </h4>
+        <input class='form-control, col-xs-4' ng-disabled='true' value="Baseline Covariates" />
+      </div>
+    </fieldset>
+
+    <br />
+    
+    <div class='form-group'>
+      <label class='h4-label'>Date of birth</label>
+      <cqs-input 
+        ng-class="{'has-error':errors.birth_date}"
+        attribute='form.birth_date'
+        isdisabled='disabled'
+        placeholder='YYYY-MM-DD'
+        isrequired='true'
+        draftstatus='form.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Date of consent</label>
+      <cqs-input 
+        label="labelService('StudyEnrollments.Visits.BaselineCovariates.consent_date')"
+        ng-class="{'has-error':errors.consent_date}"
+        attribute='form.consent_date'
+        isdisabled='disabled'
+        placeholder='YYYY-MM-DD'
+        isrequired='true'
+        warnings='warnings("StudyEnrollments.Visits.BaselineCovariates", "consent_date", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Sex</label>
+      <cqs-select
+          ng-class="{'has-error':errors.sex}"
+          attribute='form.sex'
+          collection='enum.sex'
+          isdisabled='disabled'
+          isrequired='true'
+          draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Race</label>
+      <cqs-select
+          ng-class="{'has-error':errors.race}"
+          attribute='form.race'
+          collection='enum.race'
+          isdisabled='disabled'
+          isrequired='true'
+          draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Ethnicity</label>
+      <cqs-select
+          ng-class="{'has-error':errors.ethnicity}"
+          attribute='form.ethnicity'
+          collection='enum.ethnicity'
+          isdisabled='disabled'
+          isrequired='true'
+          draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Zip code</label>
+      <cqs-input 
+        ng-class="{'has-error':errors.zip_code}"
+        attribute='form.zip_code'
+        isdisabled='disabled'
+        placeholder='12345'
+        isrequired='true'
+        draftstatus='form.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Diagnosis</label>
+      <cqs-select
+          ng-class="{'has-error':errors.diagnosis}"
+          attribute='form.diagnosis'
+          collection='enum.diagnosis'
+          isdisabled='disabled'
+          isrequired='true'
+          draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.BaselineCovariates.pcv_detail", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>PCV: details</label>
+      <cqs-select
+          ng-class="{'has-error':errors.pcv_detail}"
+          attribute='form.pcv_detail'
+          collection='enum.pcv_detail'
+          isdisabled='disabled'
+          isrequired='form.diagnosis === enum.diagnosis[0]'
+          draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.BaselineCovariates.mf_detail", form, visit, studyEnrollment)'>
+      <br />
+
+      <label class='h4-label'>MF: details</label>
+      <cqs-select
+          ng-class="{'has-error':errors.mf_detail}"
+          attribute='form.mf_detail'
+          collection='enum.mf_detail'
+          isdisabled='disabled'
+          isrequired='form.diagnosis === enum.diagnosis[1]'
+          draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+
+    <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.BaselineCovariates.mds_mpn_detail", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>MDS/MPN: details</label>
+      <cqs-select
+          ng-class="{'has-error':errors.mds_mpn_detail}"
+          attribute='form.mds_mpn_detail'
+          collection='enum.mds_mpn_detail'
+          isdisabled='disabled'
+          isrequired='form.diagnosis === enum.diagnosis[2]'
+          draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <br />
+
+    <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.BaselineCovariates.ruxolitinib_any_dose_start_date", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Ruxolitinib history: start date of rux (any dose)</label>
+      <cqs-input 
+        ng-class="{'has-error':errors.ruxolitinib_any_dose_start_date}"
+        attribute='form.ruxolitinib_any_dose_start_date'
+        isdisabled='disabled'
+        placeholder='YYYY-MM-DD'
+        isrequired='required("StudyEnrollments.Visits.BaselineCovariates.ruxolitinib_any_dose_start_date", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <br />
+
+    <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.BaselineCovariates.ruxolitinib_baseline_start_date", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Ruxolitinib history: start date of rux (baseline dose at study enrollment)</label>
+      <cqs-input 
+        ng-class="{'has-error':errors.ruxolitinib_baseline_start_date}"
+        attribute='form.ruxolitinib_baseline_start_date'
+        isdisabled='disabled'
+        placeholder='YYYY-MM-DD'
+        isrequired='required("StudyEnrollments.Visits.BaselineCovariates.ruxolitinib_baseline_start_date", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.BaselineCovariates.ruxolitinib_baseline_dose", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Ruxolitinib history: baseline dose level (at study enrollment) (mg)</label>
+      <cqs-select
+        ng-class="{'has-error':errors.ruxolitinib_baseline_dose}"
+        attribute='form.ruxolitinib_baseline_dose'
+        collection='enum.ruxolitinib_baseline_dose'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.BaselineCovariates.ruxolitinib_baseline_dose", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='row' 
+      ng-show='required("StudyEnrollments.Visits.BaselineCovariates.ruxolitinib_symptom_response", form, visit, studyEnrollment)'>
+      
+      <div class="redborder heavy-text">
+        Ruxolitinib history: Please indicate sub-optimal response on baseline dose of rux, by selecting complete or less than complete response for each parameter. Please see protocol appendices for complete response criteria.
+      </div>
+
+      <div class='col-xs-offset-1 col-xs-9'>
+        <table class='table table-bordered table-striped radio-table'>
+          <thead>
+            <tr>
+              <th></th>
+              <th class='radio-cell' ng-repeat='value in enum.ruxolitinib_symptom_response'>{{ value }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class='radio-fieldname'>Symptom response</td>
+              <td class='radio-cell' ng-repeat='value in enum.ruxolitinib_symptom_response'>
+                <cqs-radio 
+          ng-class="{'has-error':errors.ruxolitinib_symptom_response}"
+                fieldname='ruxolitinib_symptom_response'
+                           attribute='form.ruxolitinib_symptom_response'
+                           value='value'
+                           isrequired='required("StudyEnrollments.Visits.BaselineCovariates.ruxolitinib_symptom_response", form, visit, studyEnrollment)'
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td class='radio-fieldname'>Bone marrow response</td>
+              <td class='radio-cell' ng-repeat='value in enum.ruxolitinib_bone_marrow_response'>
+                <cqs-radio fieldname='ruxolitinib_bone_marrow_response'
+          ng-class="{'has-error':errors.ruxolitinib_bone_marrow_response}"
+                           attribute='form.ruxolitinib_bone_marrow_response'
+                           value='value'
+                           isrequired='required("StudyEnrollments.Visits.BaselineCovariates.ruxolitinib_bone_marrow_response", form, visit, studyEnrollment)'
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td class='radio-fieldname'>Spleen response</td>
+              <td class='radio-cell' ng-repeat='value in enum.ruxolitinib_spleen_response'>
+                <cqs-radio fieldname='ruxolitinib_spleen_response'
+          ng-class="{'has-error':errors.ruxolitinib_spleen_response}"
+                           attribute='form.ruxolitinib_spleen_response'
+                           value='value'
+                           isrequired='required("StudyEnrollments.Visits.BaselineCovariates.ruxolitinib_spleen_response", form, visit, studyEnrollment)'
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+            <tr>
+              <td class='radio-fieldname'>Blood count response</td>
+              <td class='radio-cell' ng-repeat='value in enum.ruxolitinib_blood_count_response'>
+                <cqs-radio fieldname='ruxolitinib_blood_count_response'
+          ng-class="{'has-error':errors.ruxolitinib_blood_count_response}"
+                           attribute='form.ruxolitinib_blood_count_response'
+                           value='value'
+                           isrequired='required("StudyEnrollments.Visits.BaselineCovariates.ruxolitinib_blood_count_response", form, visit, studyEnrollment)'
+                           draftstatus='form.draftStatus'>
+                </cqs-radio>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class='form-group'>
+      <label class='h4-label'>Smoking history</label>
+      <cqs-select
+          ng-class="{'has-error':errors.smoking_history}"
+          attribute='form.smoking_history'
+          collection='enum.smoking_history'
+          isdisabled='disabled'
+          isrequired='true'
+          draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Alcohol history</label>
+      <cqs-select
+          ng-class="{'has-error':errors.alcohol_history}"
+          attribute='form.alcohol_history'
+          collection='enum.alcohol_history'
+          isdisabled='disabled'
+          isrequired='true'
+          draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Does patient have history of thrombotic events?</label>
+      <cqs-select
+        ng-class="{'has-error':errors.thrombotic_history}"
+        attribute='form.thrombotic_history'
+        collection='["Yes","No"]'
+        isdisabled='disabled'
+        isrequired='true'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div ng-show='form.thrombotic_history === "Yes"'>
+      <div class='row'>
+        <h4 class='col-xs-12'>Please indicate yes or no for history of each type of thrombotic event.</h4>
+        <div class='col-xs-offset-1 col-xs-9'>
+          <table class='table table-bordered table-striped radio-table'>
+            <thead>
+              <tr>
+                <th></th>
+                <th class='radio-cell' ng-repeat='value in enum.thrombotic_venous'>{{ value }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class='radio-fieldname'>Venous thrombosis (e.g., DVT or PE)</td>
+                <td class='radio-cell' ng-repeat="value in enum.thrombotic_venous">
+                  <cqs-radio fieldname='thrombotic_venous'
+          ng-class="{'has-error':errors.thrombotic_venous}"
+                             attribute='form.thrombotic_venous'
+                             value="value"
+                             isrequired='required("StudyEnrollments.Visits.BaselineCovariates.thrombotic_venous", form)'
+                             draftstatus='form.draftStatus'>
+                  </cqs-radio>
+                </td>
+              </tr>
+              <tr>
+                <td class='radio-fieldname'>Peripheral arterial thrombosis (e.g., femoral, hepatic, or retinal atery clot)</td>
+                <td class='radio-cell' ng-repeat="value in enum.thrombotic_peripheral_arterial">
+                  <cqs-radio fieldname='thrombotic_peripheral_arterial'
+          ng-class="{'has-error':errors.thrombotic_peripheral_arterial}"
+                             attribute='form.thrombotic_peripheral_arterial'
+                             value="value"
+                             isrequired='required("StudyEnrollments.Visits.BaselineCovariates.thrombotic_peripheral_arterial", form)'
+                             draftstatus='form.draftStatus'>
+                  </cqs-radio>
+                </td>
+              </tr>
+              <tr>
+                <td class='radio-fieldname'>CVA or TIA</td>
+                <td class='radio-cell' ng-repeat="value in enum.thrombotic_cva_tia">
+                  <cqs-radio fieldname='thrombotic_cva_tia'
+          ng-class="{'has-error':errors.thrombotic_cva_tia}"
+                             attribute='form.thrombotic_cva_tia'
+                             value="value"
+                             isrequired='required("StudyEnrollments.Visits.BaselineCovariates.thrombotic_cva_tia", form)'
+                             draftstatus='form.draftStatus'>
+                  </cqs-radio>
+                </td>
+              </tr>
+              <tr>
+                <td class='radio-fieldname'>Myocardial infarction</td>
+                <td class='radio-cell' ng-repeat="value in enum.thrombotic_myocardial_infarction">
+                  <cqs-radio fieldname='thrombotic_myocardial_infarction'
+          ng-class="{'has-error':errors.thrombotic_myocardial_infarction}"
+                             attribute='form.thrombotic_myocardial_infarction'
+                             value="value"
+                             isrequired='required("StudyEnrollments.Visits.BaselineCovariates.thrombotic_myocardial_infarction", form)'
+                             draftstatus='form.draftStatus'>
+                  </cqs-radio>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class='row'>
+        <h4 class='col-xs-12'>Please enter date and other details of any thrombotic events on the medical history form.</h4>
+      </div>
+    </div>
+
+    <br />
+    
+    <div class='form-group'>
+      <label class='h4-label'>Record status:</label>
+      <cqs-select
+          ng-class="{'has-error':errors.draftStatus}"
+          attribute='form.draftStatus'
+          collection='["Complete", "Incomplete"]'
+          isdisabled="disabled"
+          isrequired="true">
+      </cqs-select>
+    </div>
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+
+    <a ng-href="#/studyenrollments/{{studyEnrollment.id}}?tab=visitForms&visit={{visit.id}}" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

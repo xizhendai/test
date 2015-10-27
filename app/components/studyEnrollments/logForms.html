@@ -1,0 +1,107 @@
+<div class='container-fluid'>
+  <p class='first-heading'>Adverse Events</p>
+  <div class='sub-module'>
+    <a ng-href='#/studyenrollments/{{studyEnrollment.id}}/adverseevents'>Access log</a>
+  </div>
+
+  Medical History
+  <div class='sub-module'>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <td>Narrative description of condition/occurence</td>
+        <td>Ongoing?</td>
+        <td>Start date</td>
+        <td>End date</td>
+        <td>Verified</td>
+        <td>Delete</td>
+      </thead>
+      <tbody>
+        <tr ng-repeat='mh in studyEnrollment.MedicalHistories' ng-click="rowClick('/studyenrollments/'+studyEnrollment.id+'/medicalhistories/'+mh.id)">
+          <td>{{ getWords(mh.description) }}</td>
+          <td>{{ mh.ongoing }}</td>
+          <td>{{ mh.start_date }}</td>
+          <td>{{ mh.end_date }}</td>
+          <td>
+            <button
+              ng-click='verifyObject(mh, "Medical history", {id: studyEnrollment.id, MedicalHistories: [{id: mh.id, _verify: true}]}); $event.stopPropagation();'
+              ng-show='canVerify.MedicalHistories && !isLockedDown() && mh.draftStatus === "Complete" && !objectVerified(mh)'
+              class='btn table-btn btn-success'>
+              Verify
+            </button>
+            <span ng-show='!(canVerify.MedicalHistories && !isLockedDown() && mh.draftStatus === "Complete") && !objectVerified(mh)'>Not verified</span>
+            <span ng-show='objectVerified(mh)'>{{objectVerifiedDate(mh) | date : 'yyyy-MM-dd'}}</span>
+          </td>
+          <td> <button ng-show='canDelete.MedicalHistories && !isLockedDown()' ng-click='deleteResource("MedicalHistories", mh); $event.stopPropagation();' class='btn table-btn btn-danger'>Delete</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <a ng-href='#/studyenrollments/{{studyEnrollment.id}}/medicalhistories/new' ng-show='canAdd.MedicalHistories && !isLockedDown()'>New medical history</a>
+  </div>
+
+  Concomitant Medications
+  <div class='sub-module'>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <td>Medication</td>
+        <td>Indication</td>
+        <td>Ongoing?</td>
+        <td>Start date</td>
+        <td>Stop date</td>
+        <td>Verified</td>
+        <td>Delete</td>
+      </thead>
+      <tbody>
+        <tr ng-repeat='med in studyEnrollment.ConcomitantMedications' ng-click="rowClick('/studyenrollments/'+studyEnrollment.id+'/concomitant_medications/'+med.id)">
+          <td>{{ getWords(med.medication) }}</td>
+          <td>{{ med.indication }}</td>
+          <td>{{ med.ongoing }}</td>
+          <td>{{ med.start_date }}</td>
+          <td>{{ med.stop_date }}</td>
+          <td>
+            <button
+              ng-click='verifyObject(med, "Concomitant medication", {id: studyEnrollment.id, ConcomitantMedications: [{id: med.id, _verify: true}]}); $event.stopPropagation();'
+              ng-show='canVerify.ConcomitantMedications && !isLockedDown() && med.draftStatus === "Complete" && !objectVerified(med)'
+              class='btn table-btn btn-success'>
+              Verify
+            </button>
+            <span ng-show='!(canVerify.ConcomitantMedications && !isLockedDown() && med.draftStatus === "Complete") && !objectVerified(med)'>Not verified</span>
+            <span class='edit-btn' ng-show='objectVerified(med)'>{{objectVerifiedDate(med) | date : 'yyyy-MM-dd'}}</span>
+          </td>
+          <td> <button ng-show='canDelete.ConcomitantMedications && !isLockedDown()' ng-click='deleteResource("ConcomitantMedications", med); $event.stopPropagation();' class='btn table-btn btn-danger'>Delete</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <a ng-href='#/studyenrollments/{{ studyEnrollment.id }}/concomitant_medications/new' ng-show='canAdd.ConcomitantMedications && !isLockedDown()'>New concomitant medication</a>
+  </div>
+
+  Comments
+  <div class='sub-module'>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <td>Date</td>
+        <td>Comment</td>
+        <td>Comment entered by</td>
+        <td>Verified</td>
+        <td>Delete</td>
+      </thead>
+      <tbody>
+        <tr ng-repeat='com in studyEnrollment.Comments' ng-click="rowClick('/studyenrollments/'+studyEnrollment.id+'/comments/'+com.id)">
+          <td>{{ com.date }}</td>
+          <td>{{ getWords(com.comment) }}</td>
+          <td>{{ com.enteredBy }}</td>
+          <td>
+            <button ng-click='verifyObject(com, "Comment", {id: studyEnrollment.id, Comments: [{id: com.id, _verify: true}]}); $event.stopPropagation();'
+              ng-show='canVerify.Comments && !isLockedDown() && com.draftStatus === "Complete" && !objectVerified(com)'
+              class='btn table-btn btn-success'>
+              Verify
+            </button>
+            <span ng-show='!(canVerify.Comments && !isLockedDown() && com.draftStatus === "Complete") && !objectVerified(com)'>Not verified</span>
+            <span ng-show='objectVerified(com)'>{{objectVerifiedDate(com) | date : 'yyyy-MM-dd'}}</span>
+          </td>
+          <td><button ng-show='canDelete.Comments && !isLockedDown()' ng-click='deleteResource("Comments", com); $event.stopPropagation();' class='btn table-btn btn-danger'>Delete</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <a ng-href='#/studyenrollments/{{ studyEnrollment.id }}/comments/new' ng-show='canAdd.Comments && !isLockedDown()'>New comment</a>
+ </div>
+</div>

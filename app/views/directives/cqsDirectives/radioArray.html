@@ -1,0 +1,18 @@
+<table class="table table-bordered table-striped">
+  <thead>
+    <th></th>
+    <th ng-repeat='value in values'>{{ value }}</th>
+  </thead>
+  <tbody>
+    <tr ng-repeat='attr in attributes'>
+      <td>{{attr.label}}</td>
+      <td ng-repeat='value in values'>
+        <input type='radio'
+          ng-model='attr.attribute'
+          ng-value='value'
+          name='{{attr.label}}'
+        />
+      </td>
+    </tr>
+  </tbody>
+</table>

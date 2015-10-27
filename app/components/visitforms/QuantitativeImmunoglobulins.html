@@ -1,0 +1,202 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>Quantitative immunoglobulins</h2>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='form'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && form.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <fieldset>
+      <legend>Details</legend>
+      <div class='row'>
+        <h4 class='col-xs-1'>Visit</h4>
+        <input class='form-control, col-xs-4' ng-model='visit_type' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-3'>Date of clinical visit </h4>
+        <input class='form-control, col-xs-2' ng-model='visit.visit_date' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-1'>Form </h4>
+        <input class='form-control, col-xs-4' ng-disabled='true' value="Quantitative immunoglobulins" />
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Quantitative immunoglobulin assessment performed</legend>
+      
+      <div class='form-group' 
+        ng-show='required("StudyEnrollments.Visits.QuantitativeImmunoglobulins.performed", form, visit, studyEnrollment)'>
+        <label class='h4-label'>Were quantitative immunoglobulins assessed for this study visit?</label>
+        <cqs-select
+          ng-class="{'has-error':errors.performed}"
+          attribute='form.performed'
+          collection='enum.performed'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.QuantitativeImmunoglobulins.performed", form, visit, studyEnrollment)'
+          change='clearData(form.performed==="Yes", [],["date_as_same_as_visit"]); '
+          draftstatus='form.draftStatus'>
+        </cqs-select>
+      </div>
+      
+      <div class='form-group indent-1' 
+        ng-show='required("StudyEnrollments.Visits.QuantitativeImmunoglobulins.not_performed_reason", form, visit, studyEnrollment)'>
+        <br />
+        <label class='h4-label'>Quantitative immunoglobulins: reason not assessed </label>
+        <cqs-select
+          ng-class="{'has-error':errors.not_performed_reason}"
+          attribute='form.not_performed_reason'
+          collection='enum.not_performed_reason'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.QuantitativeImmunoglobulins.not_performed_reason", form, visit, studyEnrollment)'
+          draftstatus='form.draftStatus'>
+        </cqs-select>
+      </div>
+
+      <div class='form-group indent-2' 
+        ng-show='required("StudyEnrollments.Visits.QuantitativeImmunoglobulins.not_performed_reason_other", form, visit, studyEnrollment)'>
+        <br />
+        <label class='h4-label'>Quantitative immunoglobulins: reason not assessed - specify</label>
+        <cqs-area
+          ng-class="{'has-error':errors.not_performed_reason_other}"
+          attribute='form.not_performed_reason_other'
+          isdisabled='disabled'
+          placeholder="test"
+          isrequired='required("StudyEnrollments.Visits.QuantitativeImmunoglobulins.not_performed_reason_other", form, visit, studyEnrollment)'
+          draftstatus='form.draftStatus'>
+        </cqs-area>
+      </div>
+
+      <div class='form-group indent-1' ng-show='(form.performed === "Yes")'>
+        <br />
+        <label class='h4-label'>Date of blood draw for quantitative immunoglobulin assessment</label>
+      </div>
+
+      <div class='form-group indent-1' ng-show='form.performed === "Yes"'>
+        <h4 class='col-xs-3 no-left-padding'>Same as date of clinical visit</h4>
+        <cqs-check 
+          attribute='form.date_as_same_as_visit'
+          ng-class="{'has-error':errors.date_as_same_as_visit}"
+          isdisabled='disabled'
+          ng-click='setDate("date_of_blood_draw", form.date_as_same_as_visit)'
+          clearif='form.performed !== "Yes"'
+          draftstatus='form.draftStatus'>
+        </cqs-check>
+      </div>
+
+      <div class='form-group indent-1' ng-show='form.performed === "Yes"'>
+        <cqs-input 
+          attribute='form.date_of_blood_draw'
+          label="labelService('StudyEnrollments.Visits.QuantitativeImmunoglobulins.date_of_blood_draw')"
+          ng-class="{'has-error':errors.date_of_blood_draw}"
+          isdisabled='disabled || form.date_as_same_as_visit'
+          placeholder="YYYY-MM-DD"
+          isrequired='required("StudyEnrollments.Visits.QuantitativeImmunoglobulins.date_of_blood_draw", form, visit, studyEnrollment)'
+          warnings='warnings("StudyEnrollments.Visits.QuantitativeImmunoglobulins", "date_of_blood_draw", form, visit)'
+          draftstatus='form.draftStatus'>
+        </cqs-input>
+      </div>
+    </fieldset>
+    <fieldset ng-show='(form.performed === "Yes" && form.date_of_blood_draw)'>
+      <legend>Quantitative immunoglobulin findings</legend>
+      <div class='row' ng-show='required("StudyEnrollments.Visits.QuantitativeImmunoglobulins.IgA", form, visit, studyEnrollment)'>
+        <h4 class='col-xs-2'>IgA (mg/dL)</h4>
+        <p class='col-xs-1'>
+          <cqs-input attribute='form.IgA'
+            ng-class="{'has-error':errors.IgA}"
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.QuantitativeImmunoglobulins.IgA", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'
+            label='labelService("StudyEnrollments.Visits.QuantitativeImmunoglobulins.IgA")'
+            warnings='rangeWarnings("iga", form.IgA, form.date_of_blood_draw)'>
+          </cqs-input>
+        </p>
+      </div>
+      <range-details 
+        ng-show='outOfRange("iga", form.IgA, form.date_of_blood_draw)'
+        obj="form.IgA_details"
+        errors="errors.IgA_details"
+        draftstatus='form.draftStatus'
+        requirement1='outOfRange("iga", form.IgA, form.date_of_blood_draw)'
+        requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.IgA_details)"
+        requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.IgA_details)">
+      </range-details>
+      <div class='row rangeDetail' ng-show='required("StudyEnrollments.Visits.QuantitativeImmunoglobulins.IgG", form, visit, studyEnrollment)'>
+        <h4 class='col-xs-2'>IgG (mg/dL)</h4>
+        <p class='col-xs-1'>
+          <cqs-input attribute='form.IgG'
+            ng-class="{'has-error':errors.IgG}"
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.QuantitativeImmunoglobulins.IgG", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'
+            label='labelService("StudyEnrollments.Visits.QuantitativeImmunoglobulins.IgG")'
+            warnings='rangeWarnings("igg", form.IgG, form.date_of_blood_draw)'>
+          </cqs-input>
+        </p>
+      </div>
+      <range-details 
+        ng-show='outOfRange("igg", form.IgG, form.date_of_blood_draw)'
+        obj="form.IgG_details"
+        errors="errors.IgG_details"
+        draftstatus='form.draftStatus'
+        requirement1='outOfRange("igg", form.IgG, form.date_of_blood_draw)'
+        requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.IgG_details)"
+        requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.IgG_details)">
+      </range-details>
+      <div class='row rangeDetail' ng-show='required("StudyEnrollments.Visits.QuantitativeImmunoglobulins.IgM", form, visit, studyEnrollment)'>
+        <h4 class='col-xs-2'>IgM (mg/dL)</h4>
+        <p class='col-xs-1'>
+          <cqs-input attribute='form.IgM'
+            ng-class="{'has-error':errors.IgM}"
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.QuantitativeImmunoglobulins.IgM", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'
+            label='labelService("StudyEnrollments.Visits.QuantitativeImmunoglobulins.IgM")'
+            warnings='rangeWarnings("igm", form.IgM, form.date_of_blood_draw)'>
+          </cqs-input>
+        </p>
+      </div>
+      <range-details 
+        ng-show='outOfRange("igm", form.IgM, form.date_of_blood_draw)'
+        obj="form.IgM_details"
+        errors="errors.IgM_details"
+        draftstatus='form.draftStatus'
+        requirement1='outOfRange("igm", form.IgM, form.date_of_blood_draw)'
+        requirement2="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event', form.IgM_details)"
+        requirement3="required('StudyEnrollments.components.rangeDetails.reportable_adverse_event_other', form.IgM_details)">
+      </range-details>
+    </fieldset>
+    <div class='form-group'>
+      <label class='h4-label'>Record status:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.draftStatus}"
+        attribute='form.draftStatus'
+        collection='["Complete", "Incomplete"]'
+        isdisabled="disabled"
+        isrequired="true">
+      </cqs-select>
+    </div>
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+
+    <a ng-href="#/studyenrollments/{{studyEnrollment.id}}?tab=visitForms&visit={{ visit.id }}" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

@@ -1,0 +1,503 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>Observations and reviews</h2>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='form'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && form.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <fieldset>
+      <legend>Details</legend>
+      <div class='row'>
+        <h4 class='col-xs-1'>Visit</h4>
+        <input class='form-control, col-xs-4' ng-model='visit_type' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-3'>Date of clinical visit </h4>
+        <input class='form-control, col-xs-2' ng-model='visit.visit_date' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-1'>Form </h4>
+        <input class='form-control, col-xs-4' ng-disabled='true' value="Observations and reviews" />
+      </div>
+    </fieldset>
+
+    <fieldset class="border" ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.med_hx_reviewed", form, visit, studyEnrollment)'>
+
+      <legend>Medical history review</legend>
+
+      <fieldset>
+        <legend>Review performed</legend>
+        
+        <div class='form-group' 
+              ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.med_hx_reviewed", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Was medical history reviewed and updated for this study visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.med_hx_reviewed}"
+            attribute='form.med_hx_reviewed'
+            collection='enum.med_hx_reviewed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.med_hx_reviewed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+            ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.not_reviewed_reason", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Medical history: reason not performed</label>
+          <cqs-select
+            ng-class="{'has-error':errors.not_reviewed_reason}"
+            attribute='form.not_reviewed_reason'
+            collection='enum.not_reviewed_reason'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.not_reviewed_reason", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+              ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.not_reviewed_reason_other", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Medical history: reason not performed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.not_reviewed_reason_other}"
+            attribute='form.not_reviewed_reason_other'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.not_reviewed_reason_other", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+      </fieldset>
+
+      <fieldset ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.Transfusion_PRBC", form, visit, studyEnrollment)'>
+        <legend>Findings</legend>
+        
+        <div class='form-group' ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.thr_hem_events", form, visit, studyEnrollment) '>
+          <label class='h4-label'>Has patient experienced any thrombotic or hemorrhagic events since last disease assessment?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.thr_hem_events}"
+            attribute='form.thr_hem_events'
+            collection='enum.thr_hem_events'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.thr_hem_events", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PRBC_performed_priorC1D1", form, visit, studyEnrollment)'>
+          <br />
+          <h4 class='col-xs-10x' ng-hide='disabled'>Patient transfusion-dependency</h4>
+          <br />
+          <label class='h4-label'>Has patient had any transfusion of packed red blood cells (PRBC) in the 12 weeks prior to C1D1?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.PRBC_performed_priorC1D1}"
+            attribute='form.PRBC_performed_priorC1D1'
+            collection='enum.PRBC_performed_priorC1D1'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PRBC_performed_priorC1D1", form, visit, studyEnrollment)'
+            change='autoFillForm()'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PRBC_units_priorC1D1", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>How many total units of PRBC have been transfused in the 12 weeks prior to C1D1?</label>
+          <cqs-input
+            ng-class="{'has-error':errors.PRBC_units_priorC1D1}"
+            attribute='form.PRBC_units_priorC1D1'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PRBC_units_priorC1D1", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PRBC_date_priorC1D1", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Date of patient's MOST RECENT transfusion of PRBC prior to C1D1</label>
+          <cqs-input
+            ng-class="{'has-error':errors.PRBC_date_priorC1D1}"
+            attribute='form.PRBC_date_priorC1D1'
+            placeholder="YYYY-MM-DD"
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PRBC_date_priorC1D1", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PRBC_performed_sinceC1D1", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Has patient had any transfusion of packed red blood cells (PRBC) since C1D1?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.PRBC_performed_sinceC1D1}"
+            attribute='form.PRBC_performed_sinceC1D1'
+            collection='enum.PRBC_performed_sinceC1D1'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PRBC_performed_sinceC1D1", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PRBC_performed_12week_priorVisit", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Has patient had any transfusion of packed red blood cells (PRBC) in the 12 weeks prior to this visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.PRBC_performed_12week_priorVisit}"
+            attribute='form.PRBC_performed_12week_priorVisit'
+            collection='enum.PRBC_performed_12week_priorVisit'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PRBC_performed_12week_priorVisit", form, visit, studyEnrollment)'
+            change='autoFillForm()'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PRBC_performed_8week_priorVisit", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Has patient had any transfusion of packed red blood cells (PRBC) in the eight weeks prior to this visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.PRBC_performed_8week_priorVisit}"
+            attribute='form.PRBC_performed_8week_priorVisit'
+            collection='enum.PRBC_performed_8week_priorVisit'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PRBC_performed_8week_priorVisit", form, visit, studyEnrollment)'
+            change='autoFillForm()'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PRBC_performed_4week_priorVisit", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Has patient had any transfusion of platelets in the four weeks prior to this visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.PRBC_performed_4week_priorVisit}"
+            attribute='form.PRBC_performed_4week_priorVisit'
+            collection='enum.PRBC_performed_4week_priorVisit'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PRBC_performed_4week_priorVisit", form, visit, studyEnrollment)'
+            change='autoFillForm()'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.Transfusion_PRBC", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Transfusion-dependency (PRBC)</label>
+          <cqs-select
+            ng-class="{'has-error':errors.Transfusion_PRBC}"
+            attribute='form.Transfusion_PRBC'
+            collection='enum.Transfusion_PRBC'
+            isdisabled='true'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.Transfusion_PRBC", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.Transfusion_platelets", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Transfusion-dependency (platelets)</label>
+          <cqs-select
+            ng-class="{'has-error':errors.Transfusion_platelets}"
+            attribute='form.Transfusion_platelets'
+            collection='enum.Transfusion_platelets'
+            isdisabled='true'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.Transfusion_platelets", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <br />
+      </fieldset>
+      <div class='row' ng-show='form.med_hx_reviewed === "Yes"'>
+        <div class="redborder heavy-text" ng-hide='disabled'>
+          Please enter details of any new or changed, clinically significant medical history findings on the medical history form.
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.AE_reviewed", form, visit, studyEnrollment)'>
+      <legend>Adverse event review</legend>
+      
+      <div class='form-group' 
+        ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.AE_reviewed", form, visit, studyEnrollment)'>
+        <label class='h4-label'>Were adverse events reviewed and updated for this study visit?</label>
+        <cqs-select
+          ng-class="{'has-error':errors.AE_reviewed}"
+          attribute='form.AE_reviewed'
+          collection='enum.AE_reviewed'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.AE_reviewed", form, visit, studyEnrollment)'
+          draftstatus='form.draftStatus'>
+        </cqs-select>
+      </div>
+      
+      <div class='form-group indent-1' 
+        ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.not_AEreviewed_reason", form, visit, studyEnrollment)'>
+        <br />
+        <label class='h4-label'>Adverse events: reason not performed</label>
+        <cqs-select
+          ng-class="{'has-error':errors.not_AEreviewed_reason}"
+          attribute='form.not_AEreviewed_reason'
+          collection='enum.not_AEreviewed_reason'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.not_AEreviewed_reason", form, visit, studyEnrollment)'
+          draftstatus='form.draftStatus'>
+        </cqs-select>
+      </div>
+
+      <div class='form-group indent-2' 
+        ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.not_AEreviewed_reason_other", form, visit, studyEnrollment)'>
+        <br />
+        <label class='h4-label'>Adverse events: reason not performed: specify</label>
+        <cqs-area
+          ng-class="{'has-error':errors.not_AEreviewed_reason_other}"
+          attribute='form.not_AEreviewed_reason_other'
+          isdisabled='disabled'
+          isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.not_AEreviewed_reason_other", form, visit, studyEnrollment)'
+          draftstatus='form.draftStatus'>
+        </cqs-area>
+      </div>
+
+      <br />
+
+      <div class='row' ng-show='form.AE_reviewed === "Yes"'>
+        <div class="redborder heavy-text" ng-hide='disabled'>
+          Please enter details of any new or changed, clinically significant AE findings on the AE form.
+        </div>
+      </div>
+
+    </fieldset>
+
+    <fieldset ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.CM_reviewed", form, visit, studyEnrollment)'>
+      <legend>Concomitant medication review</legend>
+      <fieldset>
+        <legend>Review performed</legend>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.CM_reviewed", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Were concomitant medications reviewed and updated for this study visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.CM_reviewed}"
+            attribute='form.CM_reviewed'
+            collection='enum.CM_reviewed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.CM_reviewed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+        
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.not_CMreviewed_reason", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Concomitant medications: reason not performed</label>
+          <cqs-select
+            ng-class="{'has-error':errors.not_CMreviewed_reason}"
+            attribute='form.not_CMreviewed_reason'
+            collection='enum.not_CMreviewed_reason'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.not_CMreviewed_reason", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.not_CMreviewed_reason_other", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Concomitant medications: reason not performed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.not_CMreviewed_reason_other}"
+            attribute='form.not_CMreviewed_reason_other'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.not_CMreviewed_reason_other", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+      </fieldset>
+
+      <fieldset ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_started", form, visit, studyEnrollment) || required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_changed", form, visit, studyEnrollment)'>
+        <legend>Findings</legend>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_started", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Has patient started drug regimen for PCP prophylaxis?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.PCP_started}"
+            attribute='form.PCP_started'
+            collection='enum.PCP_started'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_started", form, visit, studyEnrollment)'
+            change='autoFillForm();'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group' 
+            ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_changed", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Has patient changed PCP prophylaxis drug regimen since last review of concomitant medications?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.PCP_changed}"
+            attribute='form.PCP_changed'
+            collection='enum.PCP_changed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_changed", form, visit, studyEnrollment)'
+            change='autoFillForm();'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+            ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_prophy_drug", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PCP prophy: drug</label>
+          <cqs-select
+          ng-class="{'has-error':errors.PCP_prophy_drug}"
+                      attribute='form.PCP_prophy_drug'
+                      collection='enum.PCP_prophy_drug'
+                      isdisabled='disabled'
+                      isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_prophy_drug", form, visit, studyEnrollment)'
+                      draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+            ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_prophy_drug_other", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>If other PCP prophy drug: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.PCP_prophy_drug_other}"
+            attribute='form.PCP_prophy_drug_other'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_prophy_drug_other", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+        <div class='form-group indent-1' 
+              ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_prophy_start_date", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PCP prophy drug: start date</label>
+          <cqs-input
+            label='labelService("StudyEnrollments.Visits.ObservationsAndReviews.PCP_prophy_start_date")'
+            ng-class="{'has-error':errors.PCP_prophy_start_date}"
+            placeholder='YYYY-MM-DD'
+            attribute='form.PCP_prophy_start_date'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_prophy_start_date", form, visit, studyEnrollment)'
+            warnings='warnings("StudyEnrollments.Visits.ObservationsAndReviews", "PCP_prophy_start_date", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class='form-group indent-1' 
+              ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_prophy_route", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PCP prophy drug: route of administration</label>
+          <cqs-select
+            ng-class="{'has-error':errors.PCP_prophy_route}"
+            attribute='form.PCP_prophy_route'
+            collection='enum.PCP_prophy_route'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_prophy_route", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+              ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_prophy_dosage", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PCP prophy drug: dosage (mg)</label>
+          <cqs-input
+            ng-class="{'has-error':errors.PCP_prophy_dosage}"
+            attribute='form.PCP_prophy_dosage'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_prophy_dosage", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class='form-group indent-1' 
+            ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_prophy_frequency", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>PCP prophy drug: frequency</label>
+          <cqs-select
+            ng-class="{'has-error':errors.PCP_prophy_frequency}"
+            attribute='form.PCP_prophy_frequency'
+            collection='enum.PCP_prophy_frequency'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_prophy_frequency", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_prophy_frequency_other", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>If other PCP prophy drug frequency: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.PCP_prophy_frequency_other}"
+            attribute='form.PCP_prophy_frequency_other'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ObservationsAndReviews.PCP_prophy_frequency_other", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+      </fieldset>
+      <br />
+
+      <div class='row' ng-show='form.CM_reviewed === "Yes"'>
+        <div class="redborder heavy-text" ng-hide='disabled'>
+          Please enter details of any new or changed concomitant medications on the concomitant medications form.
+        </div>
+      </div>
+    </fieldset>
+
+    <div class='form-group'>
+      <label class='h4-label'>Record status:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.draftStatus}"
+        attribute='form.draftStatus'
+        collection='["Complete", "Incomplete"]'
+        isdisabled="disabled"
+        isrequired="true">
+      </cqs-select>
+    </div>
+
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+
+    <a ng-href="#/studyenrollments/{{studyEnrollment.id}}?tab=visitForms&visit={{ visit.id }}" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

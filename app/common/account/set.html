@@ -1,0 +1,24 @@
+<div class='row'>
+  <div class='col-xs-offset-4'>
+    <error-list errors='messages'>
+  </div>
+</div>
+
+<form ng-submit='setPassword()'>
+  <div class='row' ng-class='{"has-error":errors.password}'>
+    <h3 class='col-xs-offset-4 col-xs-4'>New password:</h3>
+    <div class='col-xs-offset-4 col-xs-4'>
+      <input type='password' ng-model='account.password' required ></input>
+    </div>
+  </div>
+  <div class='row' ng-class='{"has-error":errors.passwordConfirmation}'>
+    <h3 class='col-xs-offset-4 col-xs-4'>New password (confirm):</h3>
+    <div class='col-xs-offset-4 col-xs-4'>
+      <input type='password' ng-model='account.passwordConfirmation' required ></input>
+    </div>
+  </div>
+  <br/>
+  <div class='row'>
+    <div class='col-xs-offset-6 col-xs-2'><button type='submit' class='btn btn-primary'>Set Password</button></div>
+  </div>
+</form>

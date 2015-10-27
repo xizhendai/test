@@ -1,0 +1,394 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>Clinical exam</h2>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='form'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && form.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <fieldset>
+      <legend>Details</legend>
+      <div class='row'>
+        <h4 class='col-xs-1'>Visit</h4>
+        <input class='form-control, col-xs-4' ng-model='visit_type' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-3'>Date of clinical visit </h4>
+        <input class='form-control, col-xs-2' ng-model='visit.visit_date' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-1'>Form </h4>
+        <input class='form-control, col-xs-4' ng-disabled='true' value="Clinical exam" />
+      </div>
+    </fieldset>
+    <fieldset ng-show='required("StudyEnrollments.Visits.ClinicalExam.physical_exam_performed", form, visit, studyEnrollment)'>
+      <legend>Physical exam</legend>
+      <fieldset>
+        <legend>PE performed</legend>
+        
+        <div class='form-group'>
+          <label class='h4-label'>Was physical exam performed for this study visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.physical_exam_performed}"
+            attribute='form.physical_exam_performed'
+            collection='enum.physical_exam_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.physical_exam_performed", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+        
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.physical_exam_not_performed_reason", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Physical exam: reason not performed</label>
+          <cqs-select
+            ng-class="{'has-error':errors.physical_exam_not_performed_reason}"
+            attribute='form.physical_exam_not_performed_reason'
+            collection='enum.physical_exam_not_performed_reason'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.physical_exam_not_performed_reason", form, visit, studyEnrollment)'
+            change='clearUnrequired("StudyEnrollments.Visits.ClinicalExam", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.physical_exam_not_performed_reason_other", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Physical exam: reason not performed: specify</label>
+          <cqs-area 
+            attribute='form.physical_exam_not_performed_reason_other'
+            ng-class="{'has-error':errors.physical_exam_not_performed_reason_other}"
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.physical_exam_not_performed_reason_other", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+      </fieldset>
+      <fieldset ng-show='required("StudyEnrollments.Visits.ClinicalExam.patient_weight", form, visit, studyEnrollment)'>
+        <legend>PE findings</legend>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.patient_height", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Patient height (cm)</label>
+          <cqs-input 
+            attribute='form.patient_height'
+            ng-class="{'has-error':errors.patient_height}"
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.patient_height", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.patient_weight", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Patient weight (kg)</label>
+          <cqs-input 
+            attribute='form.patient_weight'
+            ng-class="{'has-error':errors.patient_weight}"
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.patient_weight", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.splenomegaly_assessment", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Splenomegaly assessment</label>
+          <cqs-select
+            ng-class="{'has-error':errors.splenomegaly_assessment}"
+            attribute='form.splenomegaly_assessment'
+            collection='enum.splenomegaly_assessment'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.splenomegaly_assessment", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.evidence_of_other_extramedullary_hematopoiesis", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Evidence of other (non-speen) extramedullary hematopoiesis (EMH)</label>
+          <cqs-select
+            ng-class="{'has-error':errors.evidence_of_other_extramedullary_hematopoiesis}"
+            attribute='form.evidence_of_other_extramedullary_hematopoiesis'
+            collection='enum.evidence_of_other_extramedullary_hematopoiesis'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.evidence_of_other_extramedullary_hematopoiesis", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.specify_non_spleen_site_of_EMH", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Specify non-spleen site of EMH</label>
+          <cqs-select
+            ng-class="{'has-error':errors.specify_non_spleen_site_of_EMH}"
+            attribute='form.specify_non_spleen_site_of_EMH'
+            collection='enum.specify_non_spleen_site_of_EMH'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.specify_non_spleen_site_of_EMH", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.specify_other_site", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Specify other site</label>
+          <cqs-input
+            ng-class="{'has-error':errors.specify_other_site}"
+            attribute='form.specify_other_site'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.specify_other_site", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+      </fieldset>
+
+      <div class='row' ng-show='form.physical_exam_performed === "Yes"'>
+        <div class="redborder heavy-text" ng-hide='disabled'>
+          As appropriate, please enter details of these or other new or changed, clinically significant physical exam findings on the medical history or AE form.
+        </div>
+      </div>
+
+    </fieldset>
+    <fieldset ng-show='required("StudyEnrollments.Visits.ClinicalExam.vital_signs_performed", form, visit, studyEnrollment)'>
+      <legend>Vital Signs</legend>
+      <fieldset>
+        <legend>Vital signs assessed</legend>
+        
+        <div class='form-group'>
+          <label class='h4-label'>Were vital signs assessed for this study visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.vital_signs_performed}"
+            attribute='form.vital_signs_performed'
+            collection='enum.vital_signs_performed'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.vital_signs_performed", form, visit, studyEnrollment)'
+            change='clearUnrequired("StudyEnrollments.Visits.ClinicalExam", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+        
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.vital_signs_not_performed_reason", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Vital signs: reason not assessed</label>
+          <cqs-select
+            ng-class="{'has-error':errors.vital_signs_not_performed_reason}"
+            attribute='form.vital_signs_not_performed_reason'
+            collection='enum.vital_signs_not_performed_reason'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.vital_signs_not_performed_reason", form, visit, studyEnrollment)'
+            change='clearUnrequired("StudyEnrollments.Visits.ClinicalExam", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.vital_signs_not_performed_reason_other", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>Vital signs: reason not assessed: specify</label>
+          <cqs-area 
+            attribute='form.vital_signs_not_performed_reason_other'
+            ng-class="{'has-error':errors.vital_signs_not_performed_reason_other}"
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.vital_signs_not_performed_reason_other", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+            </cqs-area>
+        </div>
+      </fieldset>
+
+      <fieldset ng-show='required("StudyEnrollments.Visits.ClinicalExam.pulse_rate", form, visit, studyEnrollment)'>
+        <legend>Vital signs findings</legend>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.pulse_rate", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Pulse rate (beats per minute)</label>
+          <cqs-input
+            ng-class="{'has-error':errors.pulse_rate}"
+            attribute='form.pulse_rate'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.pulse_rate", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.respiratory_rate", form, visit, studyEnrollment)'>
+          <label class='h4-label'>Respiratory rate (breaths per minute)</label>  
+          <cqs-input
+            ng-class="{'has-error':errors.respiratory_rate}"
+            attribute='form.respiratory_rate'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.respiratory_rate", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-input>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.bp_systolic", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>BP (systolic/diastolic) (mmHg)</label>
+          <div>
+            <div style="width:50px;float:left;">
+              <cqs-input
+                attribute='form.bp_systolic'
+                ng-class="{'has-error':errors.bp_systolic}"
+                isdisabled='disabled'
+                size="4"
+                isrequired='required("StudyEnrollments.Visits.ClinicalExam.bp_systolic", form, visit, studyEnrollment)'
+                draftstatus='form.draftStatus'>
+              </cqs-input>
+            </div>
+            <label style="float:left;"><h4>&nbsp/&nbsp</h4></label>
+            <div style="width:50px;float:left">
+              <cqs-input
+                attribute='form.bp_diastolic'
+                ng-class="{'has-error':errors.bp_diastolic}"
+                isdisabled='disabled'
+                size="4"
+                isrequired='required("StudyEnrollments.Visits.ClinicalExam.bp_diastolic", form, visit, studyEnrollment)'
+                draftstatus='form.draftStatus'>
+              </cqs-input>
+            </div>
+          </div>
+        </div>
+
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.temperature", form, visit, studyEnrollment)'>
+          <br />
+          <br />
+          <br />
+          <label class='h4-label'>Temperature</label>
+          <div style="width:70px;float:left">
+            <cqs-input 
+              ng-class="{'has-error':errors.temperature}"
+              attribute='form.temperature'
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.ClinicalExam.temperature", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-input>
+          </div>
+          <div style="width:140px;display:inline-block;">
+            <cqs-select style="width:100px;"
+              ng-class="{'has-error':errors.temperature_unit}"
+              attribute='form.temperature_unit'
+              collection='enum.temperature_unit'
+              isdisabled='disabled'
+              isrequired='required("StudyEnrollments.Visits.ClinicalExam.temperature_unit", form, visit, studyEnrollment)'
+              draftstatus='form.draftStatus'>
+            </cqs-select>
+          </div>
+        </div>
+
+      </fieldset>
+    </fieldset>
+    <fieldset>
+      <legend>ECOG PS</legend>
+      <fieldset>
+        <legend>ECOG PS performed</legend>
+
+        <div class='form-group'>
+          <label class='h4-label'>Was ECOG performance status assessed for this study visit?</label>
+          <cqs-select
+            ng-class="{'has-error':errors.ecog_performance_status_performed}"
+            attribute='form.ecog_performance_status_performed'
+            collection='enum.ecog_performance_status_performed'
+            isdisabled='disabled'
+            isrequired='true'
+            change='clearUnrequired("StudyEnrollments.Visits.ClinicalExam", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+        <div class='form-group indent-1' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.ecog_performance_status_not_performed_reason", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>ECOG PS: reason not assessed</label>
+          <cqs-select
+            ng-class="{'has-error':errors.ecog_performance_status_not_performed_reason}"
+            attribute='form.ecog_performance_status_not_performed_reason'
+            collection='enum.ecog_performance_status_not_performed_reason'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.ecog_performance_status_not_performed_reason", form, visit, studyEnrollment)'
+            change='clearUnrequired("StudyEnrollments.Visits.ClinicalExam", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+        
+        <div class='form-group indent-2' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.ecog_performance_status_not_performed_reason_other", form, visit, studyEnrollment)'>
+          <br />
+          <label class='h4-label'>ECOG PS: reason not assessed: specify</label>
+          <cqs-area
+            ng-class="{'has-error':errors.ecog_performance_status_not_performed_reason_other}"
+            attribute='form.ecog_performance_status_not_performed_reason_other'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.ecog_performance_status_not_performed_reason_other", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-area>
+        </div>
+
+      </fieldset>
+      <fieldset ng-show='required("StudyEnrollments.Visits.ClinicalExam.ecog_performance_status", form, visit, studyEnrollment)'>
+        <legend>ECOG PS findings</legend>
+        
+        <div class='form-group' 
+          ng-show='required("StudyEnrollments.Visits.ClinicalExam.ecog_performance_status", form, visit, studyEnrollment)'>
+          <label class='h4-label'>ECOG performance status</label>
+          <cqs-select
+            ng-class="{'has-error':errors.ecog_performance_status}"
+            attribute='form.ecog_performance_status'
+            collection='enum.ecog_performance_status'
+            isdisabled='disabled'
+            isrequired='required("StudyEnrollments.Visits.ClinicalExam.ecog_performance_status", form, visit, studyEnrollment)'
+            draftstatus='form.draftStatus'>
+          </cqs-select>
+        </div>
+
+      </fieldset>
+    </fieldset>
+    <div class='form-group'>
+      <label class='h4-label'>Record status:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.draftStatus}"
+        attribute='form.draftStatus'
+        collection='["Complete", "Incomplete"]'
+        isdisabled="disabled"
+        isrequired="true">
+      </cqs-select>
+    </div>
+    
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+
+    <a ng-href="#/studyenrollments/{{studyEnrollment.id}}?tab=visitForms&visit={{visit.id}}" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

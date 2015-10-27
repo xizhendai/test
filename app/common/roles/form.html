@@ -1,0 +1,24 @@
+<form ng-submit='submit()'>
+  <div class='form-group'>
+    <label for='user_id'>User</label>
+    <select id='user_id' required ng-model='role.userId' ng-disabled='exists' ng-options='user.id as user.username for user in users'>
+    </select>
+  </div>
+  <div class='form-group'>
+    <label>Roles</label>
+    <ul>
+      <li ng-repeat='roleName in roleNames'>
+        <label>
+          <input type='checkbox' name='selectedRoles[]' value='{{ roleName }}' ng-checked='role.roles.indexOf(roleName) > -1' ng-click='toggleSelection(roleName)' ng-disabled='disabled'> {{ roleName }}
+        </label>
+      </li>
+    </ul>
+  </div>
+  <div ng-hide='disabled'>
+    <button class='btn btn-primary' ng-disabled='disabled'>Submit</button>
+    <a class='btn btn-primary' ng-href='#/roles/{{ role.id }}'>Cancel</a>
+  </div>
+  <div ng-show='disabled'>
+    <a class='btn btn-primary' ng-href='#/roles/{{ role.id }}/edit'>Edit</a>
+  </div>
+</form>

@@ -1,0 +1,35 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<form ng-submit='submit()'>
+  <div class='form-group'>
+    <label for='type'>Type</label>
+    <select id='type' ng-model='user.type' ng-class="{'has-error':errors.type}">
+      <option value=''>Please Select</option>
+      <option value='email'>E-mail</option>
+      <option value='vunetid'>VUnetID</option>
+    </select>
+  </div>
+  <div class='form-group' ng-show='user.type === "email"'>
+    <label for='email'>E-mail</label>
+    <input type='text' id='email' ng-required='user.type === "email"' ng-model='user.email' ng-class="{'has-error':errors.email}"></input>
+  </div>
+  <div class='form-group' ng-show='user.type === "email"'>
+    <label for='firstName'>First name</label>
+    <input type='text' id='firstName' ng-required='user.type === "email"' ng-model='user.firstName' ng-class="{'has-error':errors.firstName}"></input>
+  </div>
+  <div class='form-group' ng-show='user.type === "email"'>
+    <label for='lastName'>Last name</label>
+    <input type='text' id='lastName' ng-required='user.type === "email"' ng-model='user.lastName' ng-class="{'has-error':errors.lastName}"></input>
+  </div>
+  <div>
+  <div class='form-group' ng-show='user.type === "vunetid"'>
+    <label for='username'>VUnetID</label>
+    <input type='text' id='username' ng-required='user.type === "vunetid"' ng-model='user.username' ng-class="{'has-error':errors.username}"></input>
+  </div>
+  <div>
+    <button class='btn btn-primary'>Submit</button>
+    <a class='btn btn-primary' ng-href='#/users'>Cancel</a>
+  </div>
+</form>

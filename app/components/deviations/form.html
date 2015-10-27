@@ -1,0 +1,208 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>{{deviation.id === undefined ? "New ": ""}}Deviation</h2>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='deviation'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && deviation.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()' comment='comment(commentText)' comment-text='commentText'
+      ></query-verify>
+
+    
+    <div class='form-group'>
+      <label class='h4-label'>Category</label>
+      <cqs-select
+        ng-class="{'has-error':errors.category}"
+        attribute='deviation.category'
+        collection='enum.category'
+        isdisabled='disabled'
+        isrequired='true'
+        draftstatus='deviation.draftStatus'>
+      </cqs-select>    
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Deviation description</label>
+      <cqs-area
+        ng-class="{'has-error':errors.description}"
+        attribute='deviation.description'
+        isdisabled='disabled'
+        placeholder="Enter details here"
+        isrequired='true'
+        rows="4"
+        draftstatus='deviation.draftStatus'>
+      </cqs-area>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Date of deviation</label>
+      <cqs-input
+        ng-class="{'has-error':errors.deviation_date}"
+        attribute='deviation.deviation_date'
+        isdisabled="disabled"
+        placeholder="YYYY-MM-DD"
+        isrequired='true'
+        draftstatus='deviation.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Date discovered</label>
+      <cqs-input
+        ng-class="{'has-error':errors.discovered_date}"
+        attribute='deviation.discovered_date'
+        isdisabled="disabled"
+        placeholder="YYYY-MM-DD"
+        isrequired='true'
+        draftstatus='deviation.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <br />
+
+    <div class='row'>
+      <h4 class='col-xs-6'>Reported by: {{ deviation.reported_by ? deviation.reported_by : username() }}</h4>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Effect on patient safety</label>
+      <cqs-area
+        ng-class="{'has-error':errors.effect_on_patient_safety}"
+        attribute='deviation.effect_on_patient_safety'
+        isdisabled='disabled'
+        placeholder="Enter details here"
+        isrequired='true'
+        rows="4"
+        draftstatus='deviation.draftStatus'>
+      </cqs-area>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Action taken</label>
+      <cqs-area
+        ng-class="{'has-error':errors.action_taken}"
+        attribute='deviation.action_taken'
+        isdisabled='disabled'
+        placeholder="Enter details here"
+        isrequired='true'
+        draftstatus='deviation.draftStatus'>
+      </cqs-area>
+    </div>
+
+    <br />
+    
+    <div class='form-group'>
+      <label class='h4-label'>Did the deviation put the participant or others at increased risk and/or negatively affect the primary study aims?</label>
+      <cqs-select
+        ng-class="{'has-error':errors.did_increased_risk_or_negatively_affect}"
+        attribute='deviation.did_increased_risk_or_negatively_affect'
+        collection='enum.did_increased_risk_or_negatively_affect'
+        isdisabled='disabled'
+        isrequired='true'
+        draftstatus='deviation.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Report to IRB?</label>
+      <cqs-select
+        ng-class="{'has-error':errors.report_to_irb}"
+        attribute='deviation.report_to_irb'
+        collection='enum.report_to_irb'
+        isdisabled='deviation.did_increased_risk_or_negatively_affect === "Yes" || disabled'
+        isrequired='true'
+        draftstatus='deviation.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-1'
+         ng-show='required("StudyEnrollments.Deviations.report_to_irb_date", deviation)'>
+      <br />
+      <label class='h4-label'>Date reported to IRB</label>
+      <cqs-input
+        ng-class="{'has-error':errors.report_to_irb_date}"
+        attribute='deviation.report_to_irb_date'
+        isdisabled="disabled"
+        placeholder="YYYY-MM-DD"
+        isrequired='required("StudyEnrollments.Deviations.report_to_irb_date", deviation)'
+        draftstatus='deviation.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Sponsor notification</label>
+      <cqs-select
+        ng-class="{'has-error':errors.sponsor_notification}"
+        attribute='deviation.sponsor_notification'
+        collection='enum.sponsor_notification'
+        isdisabled='disabled'
+        isrequired='true'
+        draftstatus='deviation.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-1'
+         ng-show='required("StudyEnrollments.Deviations.sponsor_notification_initial_date", deviation)'>
+      <br />
+      <label class='h4-label'>Date of INITIAL sponsor notification</label>
+      <cqs-input
+        ng-class="{'has-error':errors.sponsor_notification_initial_date}"
+        attribute='deviation.sponsor_notification_initial_date'
+        isdisabled='disabled || deviation.sponsor_notification.search("eCRF") >= 0'
+        placeholder='YYYY-MM-DD'
+        isrequired='required("StudyEnrollments.Deviations.sponsor_notification_initial_date", deviation)'
+        draftstatus='deviation.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <div class='form-group indent-1' ng-show='deviation.sponsor_notification.search("eCRF") >= 0'>
+      <h4 class='col-xs-10' style="color:#0000FF" ng-hide='disabled'>Be sure to click the SUBMIT button below to send this report to the sponsor.</h4>
+    </div>
+
+    <br />
+    
+    <div class='form-group'>
+      <label class='h4-label'>Record status:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.draftStatus}"
+        attribute='deviation.draftStatus'
+        collection='["Complete", "Incomplete"]'
+        isdisabled="disabled"
+        isrequired="true">
+      </cqs-select>
+    </div>
+
+  </fieldset>
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+    <a ng-href="#/studyenrollments/{{ studyEnrollment.id }}/deviations/{{ deviation.id }}/edit" class='btn btn-primary edit-btn' ng-show='canEdit && disabled && !isLockedDown()'>Edit</a>
+    <a ng-href="#/studyenrollments/{{ studyEnrollment.id }}?tab=deviations" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

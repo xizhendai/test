@@ -1,0 +1,205 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>Off-treatment details</h2>
+</div>
+
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study Identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='form'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && form.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <fieldset>
+      <legend>Details</legend>
+      <div class='row'>
+        <h4 class='col-xs-1'>Visit</h4>
+        <input class='form-control, col-xs-4' ng-model='visit_type' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-3'>Date of clinical visit </h4>
+        <input class='form-control, col-xs-2' ng-model='visit.visit_date' ng-disabled='true' />
+      </div>
+      <div class='row'>
+        <h4 class='col-xs-1'>Form </h4>
+        <input class='form-control, col-xs-4' ng-disabled='true' value="Off-treatment details" />
+      </div>
+    </fieldset>
+
+
+    <div class='form-group'>
+      <label class='h4-label'>Off-treatment date:</label>
+      <cqs-input 
+        attribute='form.off_treatment_date'
+        label='labelService("StudyEnrollments.Visits.OffTreatmentDetails.off_treatment_date")'
+        ng-class="{'has-error':errors.off_treatment_date}"
+        isdisabled='disabled'
+        placeholder='YYYY-MM-DD'
+        isrequired='true'
+        draftstatus='form.draftStatus'
+        warnings='warnings("StudyEnrollments.Visits.OffTreatmentDetails", "off_treatment_date", form, visit, studyEnrollment)'>
+      </cqs-input>
+    </div>
+
+    <div class='form-group' 
+      ng-show='required("StudyEnrollments.Visits.OffTreatmentDetails.off_treatment_reason", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Off-treatment reason:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.off_treatment_reason}"
+        attribute='form.off_treatment_reason'
+        collection='enum.off_treatment_reason'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.OffTreatmentDetails.off_treatment_reason", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.OffTreatmentDetails.off_treatment_reason_other", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Off-treatment reason: specify</label>
+      <cqs-area
+        ng-class="{'has-error':errors.off_treatment_reason_other}"
+        attribute='form.off_treatment_reason_other'
+        collection='enum.off_treatment_reason_other'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.OffTreatmentDetails.off_treatment_reason_other", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-area>
+    </div>
+
+    <div class='form-group' 
+      ng-show='required("StudyEnrollments.Visits.OffTreatmentDetails.date_lastdose_tgr1202", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Date of last dose of TGR-1202</label>
+      <cqs-input
+        ng-class="{'has-error':errors.date_lastdose_tgr1202}"
+        attribute='form.date_lastdose_tgr1202'
+        isdisabled='disabled'
+        placeholder='YYYY-MM-DD'
+        isrequired='required("StudyEnrollments.Visits.OffTreatmentDetails.date_lastdose_tgr1202", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-input>
+    </div>
+
+
+
+    <div class='form-group' 
+      ng-show='required("StudyEnrollments.Visits.OffTreatmentDetails.date_lastdose_ruxolitinib", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Date of last dose of ruxolitinib</label>
+      <cqs-input
+        ng-class="{'has-error':errors.date_lastdose_ruxolitinib}"
+        attribute='form.date_lastdose_ruxolitinib'
+        isdisabled='disabled'
+        placeholder='YYYY-MM-DD'
+        isrequired='required("StudyEnrollments.Visits.OffTreatmentDetails.date_lastdose_ruxolitinib", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <div class='form-group' 
+      ng-show='required("StudyEnrollments.Visits.OffTreatmentDetails.did_patient_miss_study", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Did patient miss any study drug doses between last study visit and off-treatment date?</label>
+      <cqs-select
+        ng-class="{'has-error':errors.did_patient_miss_study}"
+        attribute='form.did_patient_miss_study'
+        collection='enum.did_patient_miss_study'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.OffTreatmentDetails.did_patient_miss_study", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.OffTreatmentDetails.number_missed_tgr1202", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>TGR-1202: number of missed doses</label>
+      <cqs-input
+        ng-class="{'has-error':errors.number_missed_tgr1202}"
+        attribute='form.number_missed_tgr1202'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.OffTreatmentDetails.number_missed_tgr1202", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.OffTreatmentDetails.number_missed_Ruxolitinib", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Ruxolitinib: number of missed doses</label>
+      <cqs-input
+        ng-class="{'has-error':errors.number_missed_Ruxolitinib}"
+        attribute='form.number_missed_Ruxolitinib'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.OffTreatmentDetails.number_missed_Ruxolitinib", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-input>
+    </div>
+
+
+    <div class='form-group indent-1' 
+      ng-show='required("StudyEnrollments.Visits.OffTreatmentDetails.missed_does_reason", form, visit, studyEnrollment)'>
+      <br />
+      <label class='col-xs-3'>Missed doses: reason</label>
+      <cqs-select
+        ng-class="{'has-error':errors.missed_does_reason}"
+        attribute='form.missed_does_reason'
+        collection='enum.missed_does_reason'
+        isdisabled='disabled'
+        isrequired='required("StudyEnrollments.Visits.OffTreatmentDetails.missed_does_reason", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group indent-2' 
+      ng-show='required("StudyEnrollments.Visits.OffTreatmentDetails.missed_does_reason_specify", form, visit, studyEnrollment)'>
+      <br />
+      <label class='h4-label'>Missed doses: reason: specify</label>
+      <cqs-area
+        ng-class="{'has-error':errors.missed_does_reason_specify}"
+        attribute='form.missed_does_reason_specify'
+        isdisabled='disabled'
+        placeholder="test"
+        isrequired='required("StudyEnrollments.Visits.OffTreatmentDetails.missed_does_reason_specify", form, visit, studyEnrollment)'
+        draftstatus='form.draftStatus'>
+      </cqs-area>
+    </div>
+
+    <br />
+
+    <div class='form-group'>
+      <label class='h4-label'>Record status:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.draftStatus}"
+        attribute='form.draftStatus'
+        collection='["Complete", "Incomplete"]'
+        isdisabled="disabled"
+        isrequired="true">
+      </cqs-select>
+    </div>
+
+  </fieldset>
+
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+
+    <a ng-href="#/studyenrollments/{{studyEnrollment.id}}?tab=visitForms&visit={{visit.id}}" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

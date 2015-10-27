@@ -1,0 +1,18 @@
+<div loading-overlay></div>
+<div ng-if='message'>{{message}}</div>
+<h1>Reference Ranges</h1>
+<div class='col-xs-6'>
+  <table ng-table='tableParams' class='table table-bordered table-striped'>
+    <tr ng-repeat='range in $data' ng-click="rowClick('/referenceranges/'+range.id)">
+      <td data-title="'Site Name'" data-sortable="'site_name'">
+        {{range.site_name}}</td>
+      <td data-title="'Start Date'" data-sortable="'start_date'">
+        {{range.start_date}}</td>
+      <td data-title="'End Date'" data-sortable="'end_date'">
+        {{range.end_date}}</td>
+    </tr>
+  </table>
+  <div class="text-right">
+    <a ng-href='#/referenceranges/new' ng-show='canCreate' class='btn btn-success'>New Reference Range</a>
+  </div>
+</div>

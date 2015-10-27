@@ -1,0 +1,110 @@
+<div class='row'>
+  <error-list errors='messages'></error-list>
+</div>
+
+<div class="row">
+  <h2 class='col-xs-10'>{{concomitantMedication.id === undefined ? "New " : ""}}Concomitant Medication</h2>
+</div>
+<form ng-submit="submit()">
+  <fieldset>
+    <legend>Study identifier: <hem-id siteid='studyEnrollment.Details.patient_site_id' patientid='studyEnrollment.Details.patient_study_id'></hem-id></legend>
+
+    <div ng-if='message'>{{message}}</div>
+
+    <query-verify
+      data-object='concomitantMedication'
+      is-disabled='disabled'
+      can-verify='{{canVerify && !isLockedDown() && concomitantMedication.draftStatus === "Complete"}}'
+      can-query='{{canVerify}}'
+      can-comment='{{canComment}}'
+      verify='verify()'
+      comment='comment()'
+      comment-text='commentText'
+      ></query-verify>
+
+    <div class='form-group'>
+      <label class="h4-label">Medication:</label>
+      <cqs-input 
+        ng-class="{'has-error':errors.medication}"
+        attribute='concomitantMedication.medication'
+        isdisabled="disabled"
+        isrequired='true'
+        draftstatus='concomitantMedication.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <div class="form-group">
+      <label class="h4-label">Indication:</label>
+      <cqs-input 
+        ng-class="{'has-error':errors.indication}"
+        attribute='concomitantMedication.indication'
+        isdisabled="disabled"
+        isrequired='true'
+        draftstatus='concomitantMedication.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <div class="form-group">
+      <label class="h4-label">Is the use of this medication ongoing?</label>
+      <cqs-select 
+        ng-class="{'has-error':errors.ongoing}"
+        attribute='concomitantMedication.ongoing'
+        collection='["Yes","No"]'
+        isdisabled='disabled'
+        isrequired='true'
+        draftstatus='concomitantMedication.draftStatus'>
+      </cqs-select>
+    </div>
+
+    <div class='form-group'>
+      <label class="h4-label">Start date*:</label>
+      <cqs-input 
+        ng-class="{'has-error':errors.start_date}"
+        attribute='concomitantMedication.start_date'
+        isdisabled='disabled'
+        placeholder='YYYY-MM-DD'
+        isrequired='true'
+        draftstatus='concomitantMedication.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <div class='form-group' 
+         ng-show='required("StudyEnrollments.ConcomitantMedications.stop_date", concomitantMedication)'>
+      <label class="h4-label">Stop date*:</label>      
+      <cqs-input 
+        ng-class="{'has-error':errors.stop_date}"
+        attribute='concomitantMedication.stop_date'
+        isdisabled='disabled'
+        placeholder='YYYY-MM-DD'
+        isrequired='required("StudyEnrollments.ConcomitantMedications.stop_date", concomitantMedication)'
+        draftstatus='concomitantMedication.draftStatus'>
+      </cqs-input>
+    </div>
+
+    <div class='row'>
+      <div class='col-xs-offset-3 redborder col-xs-4 heavy-text'>
+        * Data entry for incomplete dates:<br />
+        YYYY-MM-99 if day is unknown<br />
+        YYYY-99-99 if only year is known<br />
+        9999-99-99 if no part of date is known<br />
+      </div>
+    </div>
+
+    <div class='form-group'>
+      <label class="h4-label">Record status:</label>
+      <cqs-select
+        ng-class="{'has-error':errors.draftStatus}"
+        attribute='concomitantMedication.draftStatus'
+        collection='["Complete", "Incomplete"]'
+        isdisabled="disabled"
+        isrequired="true">
+      </cqs-select>
+    </div>
+
+  </fieldset>
+  <div>
+    <button class='btn btn-primary edit-btn' type='submit' ng-hide="disabled || submitted">Submit</button>
+    <a ng-href="#/studyenrollments/{{ studyEnrollment.id }}/concomitant_medications/{{ concomitantMedication.id }}/edit" class='btn btn-primary edit-btn' ng-show='canEdit && disabled && !isLockedDown()'>Edit</a>
+    <a ng-href="#/studyenrollments/{{ studyEnrollment.id }}?tab=logForms" class='btn btn-primary edit-btn' ng-hide='submitted'>{{disabled ? "Back" : "Cancel"}}</a>
+  </div>
+</form>

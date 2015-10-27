@@ -1,0 +1,29 @@
+<div class='indent-2 row'>
+  <h4 class='col-xs-12' >You have confirmed an out-of-range value for this lab. Is this lab value clinically significant?</h4>
+  <cqs-select class='col-xs-12'
+    attribute='obj.clinically_significant'
+    ng-class="{'has-error':errors.clinically_significant}"
+    isrequired='requirement1'
+    draftstatus='draftstatus'
+    collection="['Yes','No']">
+  </cqs-select>
+</div>
+<div class='indent-2 row' ng-show='requirement2'>
+  <h4 class='col-xs-12' >Is this lab value reportable as an adverse event?</h4>
+  <cqs-select class='col-xs-12'
+    attribute='obj.reportable_adverse_event'
+    ng-class="{'has-error':errors.reportable_adverse_event}"
+    isrequired='requirement2'
+    draftstatus='draftstatus'
+    collection="['Yes. Reportable.', 'No. Not reportable per protocol.', 'No. Not reportable for other reason.']">
+  </cqs-select>
+</div>
+<div class='indent-2 row' ng-show='requirement3'>
+  <h4 class='col-xs-12' >Out-of-range lab not reportable as AE: specify reason</h4>
+  <cqs-input class='col-xs-12'
+    attribute='obj.reportable_adverse_event_other'
+    ng-class="{'has-error':errors.reportable_adverse_event_other}"
+    draftstatus='draftstatus'
+    isrequired='requirement3'>
+  </cqs-input>
+</div>

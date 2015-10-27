@@ -1,0 +1,28 @@
+a.object {
+  @extend .btn;
+  @extend .btn-sm;
+}
+
+a.new-object, input[type="submit"][name="commit"] {
+  @extend a.object;
+  @extend .btn-primary;
+}
+
+a.view-object {
+  @extend a.object;
+  @extend .btn-success;
+}
+
+a.edit-object {
+  @extend a.object;
+  @extend .btn-warning;
+}
+
+a.delete-object, a.back {
+  @extend a.object;
+  @extend .btn-danger;
+}
+
+a.minor-header-link {
+  margin-top: 10px;
+}
